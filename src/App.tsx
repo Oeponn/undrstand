@@ -18,6 +18,7 @@ function App() {
     })
     .then(json => {
       const {test} = json;
+      console.log('test:', test);
       setTestBackend(test);
     });
   }, []);

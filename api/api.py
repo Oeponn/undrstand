@@ -44,7 +44,7 @@ def home():
 
 @app.route('/api/test/')
 def test():
-	return jsonify({"test": "Backend text", "status": 200})
+	return jsonify({"test": "Backend text", "status": 200}), 200
 
 # @app.route('/api/loggedin/', methods=['GET'])
 # def loggedin():
