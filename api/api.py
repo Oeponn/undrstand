@@ -1,41 +1,42 @@
 import flask
 from flask import Flask
-import os
-import sqlite3
-import hashlib
-import uuid
-import sys
+from flask import jsonify
+# import os
+# import sqlite3
+# import hashlib
+# import uuid
+# import sys
 
 app = Flask(__name__)
 
 # Use the environment secret if it's set
-app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', b'\xa3P\x13\xaeg\x86%\x93\xde]R\xc38K\xc4\xef\x88c\xe4\xb5h\xb4\xc5\xea')
+# app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', b'\xa3P\x13\xaeg\x86%\x93\xde]R\xc38K\xc4\xef\x88c\xe4\xb5h\xb4\xc5\xea')
 
-def get_connection():
-	conn = sqlite3.connect('../db/tiger_shi.sqlite3', isolation_level=None)
-	cursor = conn.cursor()
-	return conn, cursor
+# def get_connection():
+# 	conn = sqlite3.connect('../db/tiger_shi.sqlite3', isolation_level=None)
+# 	cursor = conn.cursor()
+# 	return conn, cursor
 
-def login_password_check(given_password, db_password):
-	# processing given password to see if its salted sha512 hash is the same as db
+# def login_password_check(given_password, db_password):
+# 	# processing given password to see if its salted sha512 hash is the same as db
 
-	algorithm = 'sha512'
-	salt = db_password.split('$')[1]
-	hash_obj = hashlib.new(algorithm)
-	password_salted = salt + given_password
-	hash_obj.update(password_salted.encode('utf-8'))
-	password_hash = hash_obj.hexdigest()
-	return db_password == "$".join([algorithm, salt, password_hash])
+# 	algorithm = 'sha512'
+# 	salt = db_password.split('$')[1]
+# 	hash_obj = hashlib.new(algorithm)
+# 	password_salted = salt + given_password
+# 	hash_obj.update(password_salted.encode('utf-8'))
+# 	password_hash = hash_obj.hexdigest()
+# 	return db_password == "$".join([algorithm, salt, password_hash])
 
-def create_password(given_password):
-	password = given_password
-	algorithm = 'sha512'
-	salt = uuid.uuid4().hex
-	hash_obj = hashlib.new(algorithm)
-	password_salted = salt + password
-	hash_obj.update(password_salted.encode('utf-8'))
-	password_hash = hash_obj.hexdigest()
-	return "$".join([algorithm, salt, password_hash])
+# def create_password(given_password):
+# 	password = given_password
+# 	algorithm = 'sha512'
+# 	salt = uuid.uuid4().hex
+# 	hash_obj = hashlib.new(algorithm)
+# 	password_salted = salt + password
+# 	hash_obj.update(password_salted.encode('utf-8'))
+# 	password_hash = hash_obj.hexdigest()
+# 	return "$".join([algorithm, salt, password_hash])
 
 @app.route('/')
 def home():
@@ -43,7 +44,7 @@ def home():
 
 @app.route('/api/test/')
 def test():
-	return {test: "Backend text", status: 200}
+	return jsonify({"test": "Backend text", "status": 200})
 
 # @app.route('/api/loggedin/', methods=['GET'])
 # def loggedin():

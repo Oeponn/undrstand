@@ -12,7 +12,10 @@ function App() {
 
   useEffect(() => {
     // fetch('/api/test/').then(res => res.text())
-    fetch('/api/test/').then(res => res.json())
+    fetch('/api/test/').then(res => {
+      console.log('res:', res);
+      return res.json();
+    })
     .then(json => {
       const {test} = json;
       setTestBackend(test);
