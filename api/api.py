@@ -41,81 +41,85 @@ def create_password(given_password):
 def home():
 	return "Hello!", 200
 
-@app.route('/api/loggedin/', methods=['GET'])
-def loggedin():
-	response = {
-		"response" : {
-			"logged_in": False, 
-			"login_type": 0, 
-			"user": ""
-		}
-	}
-	if 'username' in flask.session:
-		response['response']['logged_in'] = True
-		response['response']['login_type'] = 2
-		response['response']['user'] = flask.session['username']
-		return response, 200
-	return response, 200
+@app.route('/api/test/')
+def test():
+	return {test: "Backend text", status: 200}
 
-@app.route('/api/login/', methods=['POST'])
-def login():
-	req = flask.request.get_json()
-	response = {
-		"response" : {
-			"logged_in": False, 
-			"login_type": 0, 
-			"user": ""
-		}
-	}
-	if 'username' in flask.session and req['username'] == flask.session['username']:
-		print(flask.session['username'])
-		print(req['username'])
-		response['response']['logged_in'] = True
-		response['response']['login_type'] = 2
-		response['response']['user'] = flask.session['username']
-		return response, 200
+# @app.route('/api/loggedin/', methods=['GET'])
+# def loggedin():
+# 	response = {
+# 		"response" : {
+# 			"logged_in": False, 
+# 			"login_type": 0, 
+# 			"user": ""
+# 		}
+# 	}
+# 	if 'username' in flask.session:
+# 		response['response']['logged_in'] = True
+# 		response['response']['login_type'] = 2
+# 		response['response']['user'] = flask.session['username']
+# 		return response, 200
+# 	return response, 200
 
-	conn, cursor = get_connection()
-	cur = cursor.execute('SELECT password, role FROM users WHERE username=?',
-								 (req['username'],))
-	password = cur.fetchone()
-	conn.close()
-	# user doesn't exist
-	if password is None or not login_password_check(req['password'], password[0]):
-		# flask.abort(403)
-		flask.session.clear()
-		pass
-	else:
-		flask.session['username'] = req['username']
-		flask.session['role'] = password[1]
-		response['response']['logged_in'] = True
-		response['response']['login_type'] = 1
-		response['response']['user'] = flask.session['username']
+# @app.route('/api/login/', methods=['POST'])
+# def login():
+# 	req = flask.request.get_json()
+# 	response = {
+# 		"response" : {
+# 			"logged_in": False, 
+# 			"login_type": 0, 
+# 			"user": ""
+# 		}
+# 	}
+# 	if 'username' in flask.session and req['username'] == flask.session['username']:
+# 		print(flask.session['username'])
+# 		print(req['username'])
+# 		response['response']['logged_in'] = True
+# 		response['response']['login_type'] = 2
+# 		response['response']['user'] = flask.session['username']
+# 		return response, 200
 
-	return response, 200
+# 	conn, cursor = get_connection()
+# 	cur = cursor.execute('SELECT password, role FROM users WHERE username=?',
+# 								 (req['username'],))
+# 	password = cur.fetchone()
+# 	conn.close()
+# 	# user doesn't exist
+# 	if password is None or not login_password_check(req['password'], password[0]):
+# 		# flask.abort(403)
+# 		flask.session.clear()
+# 		pass
+# 	else:
+# 		flask.session['username'] = req['username']
+# 		flask.session['role'] = password[1]
+# 		response['response']['logged_in'] = True
+# 		response['response']['login_type'] = 1
+# 		response['response']['user'] = flask.session['username']
 
-@app.route('/api/logout/', methods=['GET'])
-def logout():
-	flask.session.clear()
-	return 'Successfully logged out', 200
+# 	return response, 200
 
-@app.route('/api/create_account/', methods=['POST'])
-def create_account():
-	req = flask.request.get_json()
+# @app.route('/api/logout/', methods=['GET'])
+# def logout():
+# 	flask.session.clear()
+# 	return 'Successfully logged out', 200
 
-	if len(req['password']) == 0:
-		return "Password can't be blank", 400
-	conn, cursor = get_connection()
-	cur = cursor.execute('SELECT username FROM users WHERE username=?',
-							 (req['username'],))
-	user = cur.fetchone()
+# @app.route('/api/create_account/', methods=['POST'])
+# def create_account():
+# 	req = flask.request.get_json()
 
-	if user is not None:
-		return "Username already in existence.", 409
+# 	if len(req['password']) == 0:
+# 		return "Password can't be blank", 400
+# 	conn, cursor = get_connection()
+# 	cur = cursor.execute('SELECT username FROM users WHERE username=?',
+# 							 (req['username'],))
+# 	user = cur.fetchone()
 
-	password = create_password(req['password'])
+# 	if user is not None:
+# 		return "Username already in existence.", 409
 
-	cursor.execute('INSERT INTO users(username, password, role) VALUES(?, ?, ?)', (req['username'], password, 'user',))
-	conn.close()
-	flask.session['username'] = req['username']
-	return 'Account successfully created.', 200
+# 	password = create_password(req['password'])
+
+# 	cursor.execute('INSERT INTO users(username, password, role) VALUES(?, ?, ?)', (req['username'], password, 'user',))
+# 	conn.close()
+# 	flask.session['username'] = req['username']
+# 	return 'Account successfully created.', 200
