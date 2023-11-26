@@ -2,13 +2,8 @@ import React, {useEffect, useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-interface TestResponse {
-  test: string,
-  status: number,
-}
-
 function App() {
-  const [testBackend, setTestBackend] = useState(0);
+  const [testBackend, setTestBackend] = useState("Loading backend");
 
   useEffect(() => {
     // fetch('/api/test/').then(res => res.text())
@@ -28,7 +23,10 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Hello user {testBackend}. Edit <code>src/App.tsx</code>.
+          Hello karen :3
+        </p>
+        <p>
+          {testBackend}
         </p>
         <a
           className="App-link"

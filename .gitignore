@@ -10,7 +10,8 @@
 
 # production
 /build
-# /api
+/api/venv
+/api/__pycache__
 
 # misc
 .DS_Store
