@@ -125,7 +125,7 @@ $hoverColor: rgb(91, 96, 98);
   background-repeat: no-repeat;
   animation:
     b 0.7s infinite steps(1),
-    t calc(var(--n) * 0.02s) steps(var(--n)) forwards;
+    t calc(var(--n) * 0.03s) steps(var(--n)) forwards;
   // animation-delay: 1s;
 }
 
@@ -217,6 +217,7 @@ $hoverColor: rgb(91, 96, 98);
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
+    cursor: pointer;
   }
 
   .contentsContainer {

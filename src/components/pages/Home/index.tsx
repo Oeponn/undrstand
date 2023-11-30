@@ -4,8 +4,8 @@ import {useSprings, animated, to as interpolate} from '@react-spring/web';
 import {useDrag} from 'react-use-gesture';
 import styles from './styles.module.scss';
 
-const TAP_THRESHOLD = 150;
-const SWIPE_THRESHOLD = 100; // Set a threshold for swipe movement
+// const TAP_THRESHOLD = 150;
+const SWIPE_THRESHOLD = 150; // Set a threshold for swipe movement
 
 type OptionType = {
   // [key: string]: string;
@@ -33,9 +33,9 @@ const cards: CardType[] = [
     question: 'Would you like to be...',
     options: {
       up: 'Sky burial',
-      right: 'Fed to the pigs',
+      right: 'Launched from a trebuchet into the village on your left',
       down: 'Buried',
-      left: 'Launched from a trebuchet into the village on your left',
+      left: 'Fed to the pigs',
     },
     scores: {
       up: {},
@@ -156,9 +156,9 @@ const CardContents = (
   );
 };
 
-const handleCardtap = (index: number) => {
-  console.log(`Tapped ${cards[index].title}`);
-};
+// const handleCardtap = (index: number) => {
+//   console.log(`Tapped ${cards[index].title}`);
+// };
 
 // These two are just helpers, they curate spring data, values that are
 // later being interpolated into css
@@ -201,13 +201,12 @@ function Deck() {
 
     const dir = xDir < 0 ? -1 : 1; // Direction should either be left or right
     const target = event.currentTarget as HTMLElement;
-    // If you flick hard enough it should trigger the card to fly out
-    const trigger =
-      velocity > 0.2 ||
-      Math.abs(mx) > SWIPE_THRESHOLD &&
-      Math.sign(mx) == Math.sign(dir);
-    // const trigger = Math.abs(mx) > SWIPE_THRESHOLD;
-    const isSwipe = Math.abs(mx) > SWIPE_THRESHOLD; // Check if it's a swipe
+    // Dropping on the side you want to select also triggers the card to fly out
+    // and have a velocity threshold for accidental micromovements on release
+    const dropped = Math.abs(mx) > SWIPE_THRESHOLD && velocity < 0.2;
+    // Flicking triggers the card to fly out ONLY if you finish on the same side
+    // you swiped towards
+    const swiped = velocity >= 0.2 && Math.sign(mx) == Math.sign(dir);
     if (down) {
       // When the drag starts, record the start time
       if (event) {
@@ -215,18 +214,14 @@ function Deck() {
       }
     } else {
       // When the drag ends, calculate the duration
-      const dragStartTime = target.dataset.dragStartTime ?
-        Number(target.dataset.dragStartTime) : Date.now();
-      const duration = Date.now() - dragStartTime;
+      // const dragStartTime = target.dataset.dragStartTime ?
+      //   Number(target.dataset.dragStartTime) : Date.now();
+      // const duration = Date.now() - dragStartTime;
 
-      // console.log('duration:', duration);
-
-      if (trigger && isSwipe) {
-        // If it's a swipe
-        // console.log('send it away');
+      if (dropped || swiped) {
         gone.add(index);
-      } else if (duration < TAP_THRESHOLD) {
-        handleCardtap(index);
+      // } else if (duration < TAP_THRESHOLD) {
+      //   handleCardtap(index);
       } else {
         // setMxPositions state back to 0 so opacity returns to 0
         setMxPositions((prevMxPositions) => {
@@ -241,7 +236,9 @@ function Deck() {
       if (index !== i) return;
       const isGone = gone.has(index);
       // When a card is gone it flys out left or right, otherwise goes back to 0
-      const x = isGone ? (200 + window.innerWidth) * dir : down ? mx : 0;
+      // Go offscreen on same side card is on, not swipe direction
+      const direction = Math.sign(mx);
+      const x = isGone ? (200 + window.innerWidth) * direction : down ? mx : 0;
       // How much the card tilts, flicking it harder makes it rotate faster
       const rot = mx / 100 + (isGone ? dir * 10 * velocity : 0);
       const scale = down ? 1.1 : 1; // Active cards lift up a bit
