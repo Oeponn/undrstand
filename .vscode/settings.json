@@ -1,0 +1,18 @@
+{
+    "eslint.format.enable": true,
+    "[javascript]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "css.lint.validProperties": ["composes"],
+    "scss.lint.validProperties": ["composes"],
+    "editor.rulers": [80, 100],
+    "[typescript]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+        "editor.formatOnSave": true
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+        "editor.formatOnSave": true
+    },
+    "eslint.alwaysShowStatus": true
+}

@@ -1,3 +1,5 @@
+@import "css/_dimensions";
+
 .App {
   text-align: center;
 }
@@ -11,6 +13,17 @@
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
+}
+
+.appContainer {
+  height: 100svh;
+  box-sizing: border-box;
+  border: 5px solid #4c525d;
+  background-color: #282c34;
+}
+
+.pageContainer {
+  height: calc(100% - $headerHeight-mobile);
 }
 
 .App-header {
@@ -34,5 +47,11 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media screen and (min-width: $mobileBreakpoint) {
+  .pageContainer {
+    height: calc(100% - $headerHeight-desktop);
   }
 }

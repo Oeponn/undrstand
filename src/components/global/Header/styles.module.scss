@@ -1,0 +1,61 @@
+@import "css/_dimensions";
+
+.container {
+  height: $headerHeight-mobile;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  // padding-bottom: 30px;
+}
+
+.oponn {
+  font-size: 15px;
+}
+
+.linksContainer {
+  font-size: 16px;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  max-width: 500px;
+  justify-content: space-evenly;
+}
+
+.headerLink, .activeLink {
+  font-size: 10px;
+  // color: black;
+  color: white;
+  flex-shrink: 1;
+  flex-grow: 1;
+  transition: flex-grow 1000ms linear;
+  text-align: center;
+}
+
+.activeLink {
+  -webkit-text-stroke-width: 1px;
+}
+
+.lineContainer {
+  width: 95%;
+}
+
+.blackLine {
+  border-color: black white white;
+  border-width: 1px;
+  margin: 20px auto 0px;
+}
+
+@media screen and (min-width: $mobileBreakpoint) {
+  .container {
+    height: $headerHeight-desktop
+  }
+
+  .headerLink {
+    font-size: 16px;
+  }
+  .oponn {
+    font-size: 32px;
+  }
+}

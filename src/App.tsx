@@ -1,44 +1,57 @@
-import React, {useEffect, useState} from 'react';
-import logo from './logo.svg';
-import './App.css';
 
-function App() {
-  const [testBackend, setTestBackend] = useState("Loading backend");
+// import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
+import {Switch, Route, BrowserRouter} from 'react-router-dom';
 
+import {
+  // Footer,
+  Header,
+} from './components/global';
+import {
+  Build,
+  Home,
+  // PageNotFound,
+} from './components/pages';
+
+import './css/App.scss';
+
+
+// import {isTouchDevice} from './components/shared/helpers';
+// const touchScreen = isTouchDevice();
+
+
+const App = () => {
+  // const [testBackend, setTestBackend] = useState('Loading backend');
   useEffect(() => {
-    // fetch('/api/test/').then(res => res.text())
-    fetch('/api/test/').then(res => {
+    fetch('/api/test/').then((res) => {
       console.log('res:', res);
       return res.json();
     })
-    .then(json => {
-      const {test} = json;
-      console.log('test:', test);
-      setTestBackend(test);
-    });
+        .then((json) => {
+          const {test} = json;
+          console.log('test:', test);
+          // setTestBackend(test);
+        });
   }, []);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Hello karen :3
-        </p>
-        <p>
-          {testBackend}
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="appContainer">
+      <BrowserRouter>
+        {/* <Header loggedIn={loggedIn} /> */}
+        <Header />
+        <div className="pageContainer">
+          <Switch>
+            <Route path="/" component={Home} exact={true} />
+            <Route path="/build" component={Build} exact={true} />
+            {/* <Route component={PageNotFound} /> */}
+          </Switch>
+        </div>
+      </BrowserRouter>
+
+      {/* <Footer /> */}
     </div>
   );
-}
+};
 
 export default App;
+
