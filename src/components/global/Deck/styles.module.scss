@@ -1,0 +1,64 @@
+$arrowSize: 20px;
+$hoverColor: rgb(91, 96, 98);
+
+.deck {
+  position: absolute;
+  width: 3250px;
+  // height: 200px;
+  height: 0;
+  will-change: transform;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  top: 47%
+}
+
+.card {
+  border: 2px solid rgb(255, 255, 255);
+  background-color: black;
+  // background-color: white;
+  color: white;
+
+  background-size: auto 75%;
+  background-repeat: no-repeat;
+  background-position: top 20px center;
+  width: 45vh;
+  // max-width: 150px;
+  max-width: 225px;
+  height: 85vh;
+  // max-height: 285px;
+  max-height: 425px;
+  will-change: transform;
+
+  // padding: 10px;
+  padding: 20px 10px;
+  border-radius: 10px;
+  box-shadow:
+    0 12.5px 75px -10px rgba(50, 50, 73, 0.4),
+    0 10px 10px -10px rgba(50, 50, 73, 0.3);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  position: relative;
+}
+
+@media screen and (min-width: 480px) {
+  .deck {
+    top: 45%;
+  }
+
+  .card {
+    max-width: 300px;
+    max-height: 525px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    cursor: pointer;
+  }
+}
