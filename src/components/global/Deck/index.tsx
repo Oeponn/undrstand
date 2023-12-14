@@ -53,6 +53,7 @@ function Deck({cards}:{cards: CardType[]}) {
     useState(new Array(cards.length).fill([0, 0]));
   // The set flags all the cards that are flicked out
   const [gone, setGone] = useState(() => new Set<number>());
+  const [isDown, setIsDown] = useState(-1);
   const [props, api] = useSprings(cards.length, (i) => ({
     ...to(i),
     from: from(i),
@@ -60,7 +61,6 @@ function Deck({cards}:{cards: CardType[]}) {
   const topCardIndex = Math.min.apply(null, [numCards - gone.size, ...gone]) - 1;
 
   const triggerSwipe = (index: number, direction: string) => {
-    setGone((prevGone) => new Set(prevGone.add(topCardIndex)));
     // Update the animation/spring to move the card off-screen
     api.start((i) => {
       if (topCardIndex !== i) return;
@@ -68,27 +68,75 @@ function Deck({cards}:{cards: CardType[]}) {
       let x = 0;
       let y = 0;
 
+      // const numOptions = Object.keys(cards[index].options).length;
+      const keys = Object.keys(cards[index].options);
+
       switch (direction) {
         case 'up':
-          y = -(200 + window.innerWidth);
+          if (keys.includes('up')) {
+            y = -(200 + window.innerWidth);
+          } else {
+            y = -10 * Math.random();
+          }
           break;
         case 'right':
-          x = (200 + window.innerWidth);
+          if (keys.includes('right')) {
+            x = (200 + window.innerWidth);
+          } else {
+            x = 10 * Math.random();
+          }
           break;
         case 'left':
-          x = -(200 + window.innerWidth);
+          if (keys.includes('left')) {
+            x = -(200 + window.innerWidth);
+          } else {
+            x = -10 * Math.random();
+          }
           break;
         case 'down':
-          y = (200 + window.innerHeight);
+          if (keys.includes('down')) {
+            y = (200 + window.innerHeight);
+          } else {
+            y = 10 * Math.random();
+          }
           break;
+      }
+
+      if (!keys.includes(direction)) {
+        return {
+          x,
+          y,
+          rot: Math.random() * 5,
+          delay: undefined,
+          config: {friction: 10, tension: 1500},
+        };
+      }
+
+
+      const horizontal = Math.abs(x) > Math.abs(y);
+
+      setGone((prevGone) => new Set(prevGone.add(topCardIndex)));
+
+      if (horizontal) {
+        setPositions((prevPositions) => {
+          const newPositions = [...prevPositions];
+          newPositions[index] = [x, 0];
+          return newPositions;
+        });
+      } else {
+        setPositions((prevPositions) => {
+          const newPositions = [...prevPositions];
+          newPositions[index] = [0, y];
+          return newPositions;
+        });
       }
 
       return {
         x,
         y,
-        rot: Math.random() * 150,
+        rot: Math.random() * 100,
         delay: undefined,
-        config: {friction: 50, tension: 200},
+        config: {friction: 50, tension: 100},
       };
     });
   };
@@ -177,11 +225,13 @@ function Deck({cards}:{cards: CardType[]}) {
     // const swiped = velocity >= 0.2 && (Math.sign(mx) == Math.sign(xDir) || Math.sign(my) == Math.sign(yDir));
     // const isSwipe = velocity > 0.2 || Math.abs(mx) > SWIPE_THRESHOLD || Math.abs(my) > SWIPE_THRESHOLD;
     if (down) {
+      setIsDown(index);
       // When the drag starts, record the start time
       if (event) {
         target.dataset.dragStartTime = Date.now().toString();
       }
     } else {
+      setIsDown(-1);
       // When the drag ends, calculate the duration
       // const dragStartTime = target.dataset.dragStartTime ?
       //   Number(target.dataset.dragStartTime) : Date.now();
@@ -254,9 +304,12 @@ function Deck({cards}:{cards: CardType[]}) {
               <CardContents
                 card={cards[i]}
                 index={i}
+                isDown={isDown === i}
+                isTop={topCardIndex === i}
                 numCards={numCards}
                 mx={positions[i][0]}
                 my={positions[i][1]}
+                swiped={gone.has(i)}
               />
             </animated.div>
           </animated.div>

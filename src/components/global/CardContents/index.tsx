@@ -1,12 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-len */
-import React from 'react';
+import React, {useEffect, useRef, useState} from 'react';
+import Typewriter from 'typewriter-effect';
 import styles from './styles.module.scss';
 
-// const TAP_THRESHOLD = 150;
 const SWIPE_THRESHOLD = 150; // Set a threshold for swipe movement
 
+const future = [
+  'Answer the previous card first.',
+  'No peeking!',
+  'Are you happy with your last decision?',
+  'You cannot cheat fate.',
+  'Hey! I\'m not going to reveal anything so stop looking.',
+  'Are you going to sit there and read these all?',
+];
+
 type OptionType = {
-  // [key: string]: string;
   up?: string;
   right: string;
   down?: string;
@@ -23,9 +32,86 @@ type CardType = {
   scores: { [key: string]: any };
 };
 
+type RefsObject = {
+  [key: string]: React.MutableRefObject<any>;
+}
+
+const typewriterOptions = {
+  autoStart: false,
+  delay: 10,
+  loop: false,
+  cursorClassName: styles.cursor,
+};
+
+const Option = ({
+  answer,
+  currDir,
+  dir,
+  isTop,
+  opacity,
+  options,
+  pressed,
+  showOptions,
+} : {
+  answer: string,
+  currDir: string,
+  dir: keyof OptionType,
+  isTop: boolean,
+  opacity: number,
+  options: OptionType,
+  pressed: boolean,
+  showOptions: boolean,
+}) => {
+  const selectedStyle: React.CSSProperties = {
+    backgroundColor: `rgba(91, 96, 98, ${opacity})`,
+  };
+  const option = options[dir];
+  let backgroundStyle = currDir === dir && !answer ? selectedStyle : {};
+  // If answer matches, keep it highlighted even if the card returns
+  if (answer === dir) {
+    backgroundStyle = {backgroundColor: `rgba(91, 96, 98, 1)`};
+  }
+
+  if (!option) {
+    return null;
+  }
+
+  let optionClasses = styles.optionText;
+
+  // If it is not the top card or show has not been triggered
+  if (!isTop || !showOptions) {
+    optionClasses = [styles.optionText, styles.optionPreview].join(' ');
+  }
+
+  // If pressed, we want the options to appear without fade/delay
+  if (pressed) {
+    optionClasses = [styles.optionText, styles.appear].join(' ');
+  }
+
+  return (
+    <div className={styles.option} key={dir} style={backgroundStyle}>
+      <span className={styles[dir]}>
+        &#10148;
+      </span>
+      <div className={optionClasses}>
+        {option}
+      </div>
+    </div>
+  );
+};
+
 const CardContents = (
-    {card, index, numCards, mx, my}:
-    {card: CardType, index: number, numCards: number, mx: number, my: number},
+    {card, index, isDown, isTop, numCards, mx, my, swiped}:
+    {
+      card: CardType,
+      index: number,
+      isDown: boolean,
+      isTop: boolean,
+      numCards: number,
+      mx: number,
+      my: number
+      swiped: boolean,
+    },
 ) => {
   const {
     title,
@@ -34,9 +120,24 @@ const CardContents = (
     options,
   } = card;
 
-  // Color opacity for option being selected by swipe
+  // TypewriterClass does not allow for assigning of ref.current
+  const refs: RefsObject = {
+    description: useRef<any>(null),
+    question: useRef<any>(null),
+  };
+  const [completed, setCompleted] = useState({
+    description: false,
+    question: false,
+  });
+  const [init, setInit] = useState(false);
+  const [pressed, setPressed] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
+  const [answer, setAnswer] = useState('');
 
-  const opacity = Math.max(Math.abs(mx/SWIPE_THRESHOLD), Math.abs(my/SWIPE_THRESHOLD));
+  // Color opacity for option being selected by swipe, biggest x y distance
+  const opacity = 2 * Math.max(
+      Math.abs(mx/SWIPE_THRESHOLD), Math.abs(my/SWIPE_THRESHOLD,
+      ));
   let currDir = '';
   if (mx < 0) {
     currDir = 'left';
@@ -49,48 +150,109 @@ const CardContents = (
     currDir = 'down';
   }
 
-  const selectedStyle: React.CSSProperties = {backgroundColor: `rgba(91, 96, 98, ${opacity})`};
+  useEffect(() => {
+    if (isDown) {
+      setPressed(true);
+      setShowOptions(true);
+    }
+  }, [isDown]);
 
-  const Option = ({dir} : {dir: keyof OptionType}) => {
-    const option = options[dir];
-    const backgroundStyle = currDir === dir ? selectedStyle : {};
+  useEffect(() => {
+    if (swiped) {
+      setAnswer(currDir);
+    }
+    if (swiped && !pressed) {
+      setPressed(true);
+      setShowOptions(true);
+    }
+  }, [swiped]);
 
-    if (!option) {
-      return null;
+  useEffect(() => {
+    if (init && refs.description && refs.description.current) {
+      if (isTop && !isDown && !pressed) {
+        refs.description.current
+            .pauseFor(500)
+            .deleteAll(1)
+            .typeString(description)
+            .start()
+            .callFunction(() => {
+              setCompleted({...completed, description: true});
+            });
+      } else {
+        refs.description.current
+            // .typeString('Decide your previous fate first')
+            .typeString(future[index])
+            .start();
+      }
+    }
+  }, [isTop, isDown, init]);
+
+  useEffect(() => {
+    if (completed.description && !completed.question && refs.question) {
+      refs.question.current
+          .pauseFor(500)
+          .typeString(question)
+          .start()
+          .pauseFor(250)
+          .callFunction(() => {
+            setCompleted({...completed, question: true});
+          });
     }
 
-    return (
-      <div className={styles.option} key={dir} style={backgroundStyle}>
-        <span className={styles[dir]}>
-          &#10148;
-        </span>
-        <div className={styles.optionText}>
-          {option}
-        </div>
-      </div>
-    );
-  };
-
-  const descriptionStyle = {'--n': description.length} as React.CSSProperties;
+    if (completed.question) {
+      // Only show options after the question is completed
+      setShowOptions(true);
+    }
+  }, [completed]);
 
   return (
     <div className={styles.contentsContainer}>
       <p className={styles.title}>{title}</p>
       <div className={styles.descriptionContainer}>
-        <p className={styles.description} style={descriptionStyle}>
-          <span className={styles.type} style={descriptionStyle}>
-            {description}
-          </span>
-        </p>
+        {pressed ?
+        <div className={styles.description}>{description}</div> :
+        <Typewriter
+          options={{
+            ...typewriterOptions,
+            wrapperClassName: styles.description,
+          }}
+          onInit={(typewriter) => {
+            typewriter.callFunction(() => {
+              refs.description.current = typewriter;
+              setInit(true);
+            }).start();
+          }}
+        />}
       </div>
-      <p className={styles.question}>{question}</p>
+      <div className={styles.questionContainer}>
+        {pressed ?
+        <p className={styles.question}>{question}</p> :
+          <Typewriter
+            options={{
+              ...typewriterOptions,
+              wrapperClassName: styles.question,
+            }}
+            onInit={(typewriter) => {
+              typewriter.callFunction(() => {
+                refs.question.current = typewriter;
+              }).start();
+            }}
+          />}
+      </div>
       <div className={styles.optionsContainer}>
         {
           Object.keys(options).map((key: string) => {
             return (
               <Option
+                answer={answer}
+                currDir={currDir}
                 dir={key as keyof OptionType}
+                isTop={isTop}
                 key={key}
+                opacity={opacity}
+                options={options}
+                pressed={pressed}
+                showOptions={showOptions}
               />
             );
           })

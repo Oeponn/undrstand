@@ -1,15 +1,23 @@
 $arrowSize: 20px;
 $hoverColor: rgb(91, 96, 98);
+$typeWriterMargin: 9px;
 
 .title,
 .description,
 .question,
-.option {
+.option,
+.index {
   composes: unselectable from "css/properties/unselectable.module.scss";
+}
+
+.cursor {
+  // border: 1px solid white;
+  visibility: hidden;
 }
 
 .contentsContainer {
   height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -22,62 +30,61 @@ $hoverColor: rgb(91, 96, 98);
   font-weight: bold;
   margin: 0;
   letter-spacing: 1px;
+  text-align: center;
 }
 
 .descriptionContainer {
+  width: calc(100% - 20px);
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-}
+  padding: 0 7px 10px;
 
-.description {
-  margin: 10px 0 30px 0;
-  padding: 0 10px;
-  letter-spacing: 1px;
-  font-size: 11px;
-  overflow: hidden;
-}
-
-.type {
-  color: #0000;
-  background:
-    // linear-gradient(-90deg, #00dffc 5px, #0000 0) 10px 0,
-    // linear-gradient(#00dffc 0 0) 0 0;
-    linear-gradient(-90deg, #ffffff 5px, #0000 0) 10px 0,
-    linear-gradient(#ffffff 0 0) 0 0;
-  background-size: calc(var(--n) * 1ch) 200%;
-  -webkit-background-clip: padding-box, text;
-  background-clip: padding-box, text;
-  background-repeat: no-repeat;
-  animation:
-    b 0.7s infinite steps(1),
-    t calc(var(--n) * 0.03s) steps(var(--n)) forwards;
-  // animation-delay: 1s;
-}
-
-@keyframes t {
-  from {
-    background-size: 0 200%;
+  :global {
+    .Typewriter {
+      :local {
+        .description {
+          line-height: 1;
+        }
+      }
+    }
   }
 }
 
-@keyframes b {
-  50% {
-    background-position:
-      0 -100%,
-      0 0;
+.description {
+  width: 100%;
+  text-align: left;
+  letter-spacing: 1px;
+  font-size: 10px;
+  overflow: hidden;
+  // Typewriter formatting prevents line height from being smaller
+  line-height: 1.7;
+}
+
+.questionContainer {
+  width: calc(100% - 20px);
+  :global {
+    .Typewriter {
+      margin-bottom: 5px;
+      :local {
+        .question {
+          line-height: 1;
+        }
+      }
+    }
   }
 }
 
 .question {
-  padding: 0 10px;
   text-align: left;
   margin-top: auto;
-  font-size: 12px;
-  font-weight: bold;
+  margin-bottom: 5px;
   margin-right: auto;
+
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1.7;
 }
 
 .optionsContainer {
@@ -98,7 +105,53 @@ $hoverColor: rgb(91, 96, 98);
 
   .optionText {
     width: calc(100% - $arrowSize);
-  }
+    max-height: 100px;
+    opacity: 100%;
+    font-size: 10px;
+
+    transition: max-height 1s ease-in-out, opacity 1s ease-in-out;
+
+    overflow: hidden;
+
+    &.optionPreview {
+      max-height: 0;
+      opacity: 0;
+    }
+
+    &.appear {
+      transition: none;
+    }
+}
+
+// TODO Move outside
+// .option {
+//   display: flex;
+//   align-items: center;
+//   border: 2px solid rgba(255, 255, 255, 0);
+//   border-radius: 5px;
+//   box-sizing: border-box;
+// }
+
+// .optionText {
+//   width: calc(100% - $arrowSize);
+//   max-height: 100px;
+//   opacity: 100%;
+//   font-size: 10px;
+
+//   transition:
+//     max-height 1s ease-in-out,
+//     opacity 1s ease-in-out;
+
+//   overflow: hidden;
+
+//   &.optionPreview {
+//     max-height: 0;
+//     opacity: 0;
+//   }
+
+//   &.appear {
+//     transition: none;
+//   }
 
   .up,
   .right,
@@ -138,61 +191,41 @@ $hoverColor: rgb(91, 96, 98);
 }
 
 @media screen and (min-width: 480px) {
-  .contentsContainer {
-    // height: 70px;
-  }
-
   .title {
     font-size: 18px;
     font-weight: bold;
     margin: 0;
   }
 
+  .descriptionContainer {
+    padding: 0 10px 20px;
+  }
+
   .description {
     font-size: 12px;
+  }
+
+  .questionContainer {
+    width: calc(100% - 20px);
+    :global {
+      .Typewriter {
+        margin-bottom: $typeWriterMargin;
+      }
+    }
   }
 
   .question {
     font-weight: bold;
     font-size: 13px;
+    // To look the same, the margin has to be = Typewriter - 1
+    margin-bottom: calc($typeWriterMargin - 1px);
   }
 
   .optionsContainer {
     font-size: 12px;
 
-    // .option:hover {
-    //   background-color: $hoverColor;
-    // }
-
-    // .up,
-    // .right,
-    // .down,
-    // .left {
-    // }
-
-    // .up {
-    // }
-
-    // .right {
-    // }
-
-    // .down {
-    // }
-
-    // .left {
-    // }
-  }
-}
-
-@keyframes t {
-  from {
-    background-size: 0 200%;
-  }
-}
-@keyframes b {
-  50% {
-    background-position:
-      0 -100%,
-      0 0;
+    .optionText {
+      font-size: 12px;
+    }
   }
 }
