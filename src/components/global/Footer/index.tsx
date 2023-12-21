@@ -1,5 +1,5 @@
 
-import logo from 'images/logo.svg';
+// import logo from 'images/logo.svg';
 import styles from './styles.module.scss';
 
 const Footer = () => {
@@ -9,7 +9,7 @@ const Footer = () => {
         <header className={styles.AppHeader}>
           <div className={styles.AppLogoContainer}>
             <p className={styles.fine}>Tap/Hover Me</p>
-            <img src={logo} className={styles.AppLogo} alt="logo" />
+            {/* <img src={logo} className={styles.AppLogo} alt="logo" /> */}
           </div>
           <p className={styles.description}>
               This website was built in ReactJS by Tiger Shi ©2021
