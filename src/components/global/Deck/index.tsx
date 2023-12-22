@@ -3,36 +3,68 @@ import React, {useEffect, useState} from 'react';
 import {useSprings, animated, to as interpolate} from '@react-spring/web';
 import {useDrag} from 'react-use-gesture';
 import CardContents from 'components/global/CardContents';
+import {CardType} from 'types/deck';
 import styles from './styles.module.scss';
+// import plausibleTracker from 'plausible-tracker';
 
 // const TAP_THRESHOLD = 150;
 const SWIPE_THRESHOLD = 150; // Set a threshold for swipe movement
-
-type OptionType = {
-  // [key: string]: string;
-  up?: string;
-  right: string;
-  down?: string;
-  left: string;
-};
-
-type CardType = {
-  title: string;
-  description: string;
-  question: string;
-  options: OptionType;
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  scores: { [key: string]: any };
-};
 
 // const handleCardtap = (index: number) => {
 //   console.log(`Tapped ${cards[index].title}`);
 // };
 
-// These two are just helpers, they curate spring data, values that are
+const keyPressDirection = {
+  ArrowUp: 'up',
+  ArrowRight: 'right',
+  ArrowLeft: 'left',
+  ArrowDown: 'down',
+};
+
+// Calculate card direciton based off key press
+const keyPressCardPosition = (keys: string[], direction: string) => {
+  let x = 0;
+  let y = 0;
+
+  // If the options include a corresponding answer to keypress, send the card
+  // Otherwise, move it slightly
+  switch (direction) {
+    case 'up':
+      if (keys.includes('up')) {
+        y = -(200 + window.innerWidth);
+      } else {
+        y = -10 * Math.random();
+      }
+      break;
+    case 'right':
+      if (keys.includes('right')) {
+        x = (200 + window.innerWidth);
+      } else {
+        x = 10 * Math.random();
+      }
+      break;
+    case 'left':
+      if (keys.includes('left')) {
+        x = -(200 + window.innerWidth);
+      } else {
+        x = -10 * Math.random();
+      }
+      break;
+    case 'down':
+      if (keys.includes('down')) {
+        y = (200 + window.innerHeight);
+      } else {
+        y = 10 * Math.random();
+      }
+      break;
+  }
+
+  return [x, y];
+};
+
+// These two are helpers, they curate spring data, values that are
 // later being interpolated into css
-const to = (i: number) => ({
+const stacked = (i: number) => ({
   x: 0,
   y: i * -4,
   scale: 1,
@@ -40,67 +72,49 @@ const to = (i: number) => ({
   delay: i * 100,
 });
 const from = (_i: number) => ({x: 0, rot: 0, scale: 1.5, y: -1000});
-// This is being used down there in the view, it interpolates rotation and
+// This is being used in the view, it interpolates rotation and
 // scale into a css transform
 const trans = (r: number, s: number) =>
-  // `perspective(none) rotateX(30deg) rotateY(${r / 10}deg) ` +
   `perspective(2500px) rotateX(30deg) rotateY(${r / 10}deg) ` +
   `rotateZ(${r}deg) scale(${s})`;
 
-function Deck({cards}:{cards: CardType[]}) {
+// Deck manages the state of all the cards and running the animations
+function Deck({
+  cards,
+  gone,
+  resetPositions,
+  setGone,
+  topCardIndex,
+  updateCardPosition,
+}:{
+  cards: CardType[],
+  gone: Set<number>,
+  resetPositions: () => void,
+  setGone: (index: number) => void,
+  topCardIndex: number,
+  updateCardPosition: (index: number, x: number, y: number) => void
+}) {
   const numCards = cards.length;
-  const [positions, setPositions] =
-    useState(new Array(cards.length).fill([0, 0]));
-  // The set flags all the cards that are flicked out
-  const [gone, setGone] = useState(() => new Set<number>());
   const [isDown, setIsDown] = useState(-1);
-  const [props, api] = useSprings(cards.length, (i) => ({
-    ...to(i),
-    from: from(i),
-  }));
-  const topCardIndex = Math.min.apply(null, [numCards - gone.size, ...gone]) - 1;
+  const [props, api] = useSprings(numCards, (i) => {
+    console.log('useSprings!', i, cards[i].title);
+    return {
+      ...stacked(i),
+      from: from(i),
+    };
+  });
+  // const plausible = plausibleTracker({
+  //   domain: 'undrstand.me',
+  // });
+
+  // console.log('plausible:', plausible);
 
   const triggerSwipe = (index: number, direction: string) => {
     // Update the animation/spring to move the card off-screen
     api.start((i) => {
       if (topCardIndex !== i) return;
-
-      let x = 0;
-      let y = 0;
-
-      // const numOptions = Object.keys(cards[index].options).length;
       const keys = Object.keys(cards[index].options);
-
-      switch (direction) {
-        case 'up':
-          if (keys.includes('up')) {
-            y = -(200 + window.innerWidth);
-          } else {
-            y = -10 * Math.random();
-          }
-          break;
-        case 'right':
-          if (keys.includes('right')) {
-            x = (200 + window.innerWidth);
-          } else {
-            x = 10 * Math.random();
-          }
-          break;
-        case 'left':
-          if (keys.includes('left')) {
-            x = -(200 + window.innerWidth);
-          } else {
-            x = -10 * Math.random();
-          }
-          break;
-        case 'down':
-          if (keys.includes('down')) {
-            y = (200 + window.innerHeight);
-          } else {
-            y = 10 * Math.random();
-          }
-          break;
-      }
+      const [x, y] = keyPressCardPosition(keys, direction);
 
       if (!keys.includes(direction)) {
         return {
@@ -115,20 +129,12 @@ function Deck({cards}:{cards: CardType[]}) {
 
       const horizontal = Math.abs(x) > Math.abs(y);
 
-      setGone((prevGone) => new Set(prevGone.add(topCardIndex)));
+      setGone(topCardIndex);
 
       if (horizontal) {
-        setPositions((prevPositions) => {
-          const newPositions = [...prevPositions];
-          newPositions[index] = [x, 0];
-          return newPositions;
-        });
+        updateCardPosition(index, x, 0);
       } else {
-        setPositions((prevPositions) => {
-          const newPositions = [...prevPositions];
-          newPositions[index] = [0, y];
-          return newPositions;
-        });
+        updateCardPosition(index, 0, y);
       }
 
       return {
@@ -142,22 +148,12 @@ function Deck({cards}:{cards: CardType[]}) {
   };
 
   const handleKeyPress = (event: KeyboardEvent) => {
-    switch (event.key) {
-      case 'ArrowUp':
-        triggerSwipe(topCardIndex, 'up');
-        break;
-      case 'ArrowRight':
-        triggerSwipe(topCardIndex, 'right');
-        break;
-      case 'ArrowLeft':
-        triggerSwipe(topCardIndex, 'left');
-        break;
-      case 'ArrowDown':
-        triggerSwipe(topCardIndex, 'down');
-        break;
-      default:
-        break;
+    const key = event.key;
+    const direction = keyPressDirection[key as keyof typeof keyPressDirection];
+    if (!Object.keys(keyPressDirection).includes(key)) {
+      return;
     }
+    triggerSwipe(topCardIndex, direction);
   };
 
   useEffect(() => {
@@ -170,21 +166,20 @@ function Deck({cards}:{cards: CardType[]}) {
   useEffect(() => {
     if (gone.size === cards.length) {
       setTimeout(() => {
-        setGone(new Set());
-        api.start((i) => to(i));
+        setGone(-1);
+        api.start((i) => stacked(i));
       }, 600);
-      setPositions(new Array(cards.length).fill([0, 0]));
+      resetPositions();
     }
   }, [gone]);
-  // Create a bunch of springs using the helpers above
-  // Create a gesture, we're interested in down-state,
-  // delta (current-pos - click-pos), direction and velocity
+
   const bind = useDrag(({
     args: [index], down, movement: [mx, my], direction: [xDir, yDir], velocity, event,
   }) => {
     if (Object.keys(cards[index].options).length == 2) {
       my = 0;
     }
+    console.log('index, tci:', index, topCardIndex);
     // If the card being clicked is not the top card, ignore
     if (index != topCardIndex) {
       return;
@@ -192,17 +187,9 @@ function Deck({cards}:{cards: CardType[]}) {
     const horizontal = Math.abs(mx) > Math.abs(my);
 
     if (horizontal) {
-      setPositions((prevPositions) => {
-        const newPositions = [...prevPositions];
-        newPositions[index] = [mx, 0];
-        return newPositions;
-      });
+      updateCardPosition(index, mx, 0);
     } else {
-      setPositions((prevPositions) => {
-        const newPositions = [...prevPositions];
-        newPositions[index] = [0, my];
-        return newPositions;
-      });
+      updateCardPosition(index, 0, my);
     }
 
     xDir = xDir < 0 ? -1 : 1; // Direction should either be left or right
@@ -222,8 +209,6 @@ function Deck({cards}:{cards: CardType[]}) {
       swiped = velocity >= 0.2 && Math.sign(my) == Math.sign(yDir);
       dropped = velocity < 0.2 && Math.abs(my) > SWIPE_THRESHOLD;
     }
-    // const swiped = velocity >= 0.2 && (Math.sign(mx) == Math.sign(xDir) || Math.sign(my) == Math.sign(yDir));
-    // const isSwipe = velocity > 0.2 || Math.abs(mx) > SWIPE_THRESHOLD || Math.abs(my) > SWIPE_THRESHOLD;
     if (down) {
       setIsDown(index);
       // When the drag starts, record the start time
@@ -240,16 +225,12 @@ function Deck({cards}:{cards: CardType[]}) {
       if (dropped || swiped) {
         // console.log('dropped:', dropped, 'swiped:', swiped);
         gone.add(index);
-        setGone((prevGone) => new Set(prevGone.add(topCardIndex)));
+        setGone(topCardIndex);
       // } else if (duration < TAP_THRESHOLD) {
       //   handleCardtap(index);
       } else {
         // setMxPositions state back to 0 so opacity returns to 0
-        setPositions((prevPositions) => {
-          const newPositions = [...prevPositions];
-          newPositions[index] = [0, 0];
-          return newPositions;
-        });
+        updateCardPosition(index, 0, 0);
       }
     }
     api.start((i) => {
@@ -274,26 +255,18 @@ function Deck({cards}:{cards: CardType[]}) {
         config: {friction: 50, tension: down ? 800 : isGone ? 200 : 500},
       };
     });
-    // if (!down && gone.size === cards.length) {
-    //   setTimeout(() => {
-    //     gone.clear();
-    //     api.start((i) => to(i));
-    //   }, 600);
-    //   setPositions(new Array(cards.length).fill([0, 0]));
-    // }
   });
-  // Now we're just mapping the animated values to our view,
-  // that's it. Btw, this component only renders once. :-)
+
   return (
     <>
+      <div className={styles.temp}>{topCardIndex}</div>
       {props.map(({x, y, rot, scale}, i) => {
         const {
           title,
+          position,
         } = cards[i];
         return (
           <animated.div className={styles.deck} key={title} style={{x, y}}>
-            {/* This is the card itself, we're binding our gesture to it
-            (and inject its index so we know which is which) */}
             <animated.div
               {...bind(i)}
               style={{
@@ -307,8 +280,7 @@ function Deck({cards}:{cards: CardType[]}) {
                 isDown={isDown === i}
                 isTop={topCardIndex === i}
                 numCards={numCards}
-                mx={positions[i][0]}
-                my={positions[i][1]}
+                position={position}
                 swiped={gone.has(i)}
               />
             </animated.div>

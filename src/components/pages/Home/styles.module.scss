@@ -12,6 +12,18 @@
   min-height: 450px;
   width: 100%;
   box-sizing: border-box;
+  color: white;
   // border: 3px orange solid;
   // overflow: hidden;
+}
+
+.options {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+.options2 {
+  position: absolute;
+  top: 100px;
+  left: 20px;
 }

@@ -3,8 +3,8 @@ $hoverColor: rgb(91, 96, 98);
 
 .deck {
   position: absolute;
-  width: 3250px;
-  // height: 200px;
+  width: 325px;
+  color: white;
   height: 0;
   will-change: transform;
   display: flex;
@@ -18,7 +18,6 @@ $hoverColor: rgb(91, 96, 98);
   border: 2px solid rgb(255, 255, 255);
   background-color: black;
   // background-color: white;
-  color: white;
 
   background-size: auto 75%;
   background-repeat: no-repeat;
@@ -58,4 +57,10 @@ $hoverColor: rgb(91, 96, 98);
     justify-content: flex-start;
     cursor: pointer;
   }
+}
+
+.temp {
+  position: absolute;
+  top: 20px;
+  right: 20px;
 }

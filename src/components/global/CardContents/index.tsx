@@ -101,15 +101,14 @@ const Option = ({
 };
 
 const CardContents = (
-    {card, index, isDown, isTop, numCards, mx, my, swiped}:
+    {card, index, isDown, isTop, numCards, position, swiped}:
     {
       card: CardType,
       index: number,
       isDown: boolean,
       isTop: boolean,
       numCards: number,
-      mx: number,
-      my: number
+      position?: {x: number, y: number},
       swiped: boolean,
     },
 ) => {
@@ -119,6 +118,12 @@ const CardContents = (
     question,
     options,
   } = card;
+
+  let mx = 0;
+  let my = 0;
+  if (position) {
+    ({x: mx, y: my} = position);
+  }
 
   // TypewriterClass does not allow for assigning of ref.current
   const refs: RefsObject = {
@@ -259,8 +264,7 @@ const CardContents = (
         }
       </div>
       <div className={styles.index}>{numCards - index}/{numCards}</div>
-      {/* <div className={styles.index}>mx:{mx} my:{my}</div> */}
-      {/* <div className={styles.index}>{opacity}</div> */}
+      {/* <div className={styles.index}>{index}</div> */}
     </div>
   );
 };
