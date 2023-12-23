@@ -23,3 +23,15 @@ export type CardTree = {
   maxLength: number,
   cards: {[key: string]: CardType}
 }
+
+export type Direction = 'up' | 'down' | 'left' | 'right';
+
+export type AnswerType = {
+  answer: Direction;
+  // dir: number;
+};
+
+export type AnswerKeyType = {
+  [key: string]: AnswerType;
+}
+

@@ -1,68 +1,16 @@
 /* eslint-disable max-len */
 import {useEffect, useState} from 'react';
 import Deck from 'components/global/Deck';
-import {CardType, CardTree} from 'types/deck';
+// import {CardType, CardTree} from 'types/deck';
+import {AnswerKeyType, CardType, CardTree, Direction} from 'types/deck';
+import {difference} from 'components/shared/helpers';
 import styles from './styles.module.scss';
 
-
-// const cards: CardType[] = [
-//   {
-//     title: 'The Third',
-//     description: 'You made your decision, but before you\'re able to act, suddenly the giant lickitung monster jumps out again and licks your butt furiously, sending you into anaphylactic shock and you die',
-//     question: 'How would you like your body processed?',
-//     options: {
-//       up: 'Sky burial',
-//       right: 'Launched from a trebuchet into the village on your right',
-//       left: 'Fed to the pigs in the stable',
-//       down: 'Buried',
-//     },
-//     scores: {
-//       up: {},
-//       right: {},
-//       left: {},
-//       down: {},
-//     },
-//   },
-//   {
-//     title: 'The Second',
-//     description: 'You lack agility. The creature departs after he is done. Your clothes are now torn and you are soaked head to toe in saliva. The temperature is dropping rapidly and you are feeling a chill start to set in. You notice a stable full of pigs a short walk to your left. To your right, far into the distance, you see what might be village lights',
-//     question: 'Which direction do you go in?',
-//     options: {
-//       // up: '',
-//       right: 'Go to the pigs and sleep with them in the mud, leeching their body warmth for the night',
-//       left: 'Sleeping with pigs is undignified. You don\'t know how far the village is, but the trek there can\'t be that far away if you can see lights',
-//       // down: '',
-//     },
-//     scores: {
-//       up: {},
-//       right: {},
-//       left: {},
-//       down: {},
-//     },
-//   },
-//   {
-//     title: 'The Beginning',
-//     description: 'You wake up in an unfamiliar place. Ahead of you is a lickitung adjacent monster with a huge mouth that is threatening to lick everything in his sight.',
-//     question: 'What do you do?',
-//     options: {
-//       up: 'Walk towards him face first',
-//       right: 'Try go around him on the right',
-//       left: 'Try go around him on the left',
-//       down: 'Walk towards him ass first',
-//     },
-//     scores: {
-//       up: {},
-//       right: {},
-//       left: {},
-//       down: {},
-//     },
-//   },
-// ];
 const blankCard: CardType = {
   key: 'blank',
   title: 'Blank',
-  description: 'Blank Card',
-  question: 'Blank',
+  description: 'There are no more paths for you to take.',
+  question: 'But you can still swipe around for fun...',
   position: {x: 0, y: 0},
   options: {
     up: 'Up',
@@ -85,7 +33,7 @@ const blankCard: CardType = {
 };
 
 const tempCards: CardTree = {
-  maxLength: 6,
+  maxLength: 8,
   cards: {
     farewell: {
       key: 'farewell',
@@ -159,8 +107,8 @@ const tempCards: CardTree = {
         down: {},
       },
     },
-    tortoises: {
-      key: 'tortoises',
+    tortoise: {
+      key: 'tortoise',
       title: 'The Tortoise',
       description: 'Imagine. You\'re in a desert, walking along in the sand, when all of a sudden you look down and see a tortoise. The tortoise lays on its back, its belly baking in the hot sun, beating its legs trying to turn itself over, but it can\'t. Not without your help.',
       question: 'What do you do?',
@@ -183,6 +131,54 @@ const tempCards: CardTree = {
         down: {},
       },
     },
+    hare: {
+      key: 'hare',
+      title: 'The Hare',
+      description: 'The hare is quite cute, but as you walk closer you realize its actually much bigger than you realize. Its almost chest height.',
+      question: 'What would you like to do?',
+      options: {
+        up: 'A sharp stick is on the ground next to you. Try to hunt and eat it?',
+        right: 'Tame it to keep as a pet',
+        left: 'Walk past it, hopefully without disturbing it',
+        down: 'Go back to the tortoise',
+      },
+      next: {
+        up: 'design',
+        right: 'design',
+        left: 'design',
+        down: 'tortoise',
+      },
+      scores: {
+        up: {},
+        right: {},
+        left: {},
+        down: {},
+      },
+    },
+    animals: {
+      key: 'animals',
+      title: 'The Race',
+      description: 'To your right, you see a hare. To your left, you see a tortoise',
+      question: 'Which do you walk towards?',
+      options: {
+        // up: 'That\'s cool',
+        right: 'Walk towards the hare',
+        left: 'Walk towards the tortoise',
+        // down: 'I see',
+      },
+      next: {
+        // up: 'tortoises',
+        right: 'hare',
+        left: 'tortoise',
+        // down: 'tortoises',
+      },
+      scores: {
+        up: {},
+        right: {},
+        left: {},
+        down: {},
+      },
+    },
     goal: {
       key: 'goal',
       title: 'The End Goal',
@@ -195,10 +191,10 @@ const tempCards: CardTree = {
         down: 'I see',
       },
       next: {
-        up: 'tortoises',
-        right: 'tortoises',
-        left: 'tortoises',
-        down: 'tortoises',
+        up: 'animals',
+        right: 'animals',
+        left: 'animals',
+        down: 'animals',
       },
       scores: {
         up: {},
@@ -235,49 +231,87 @@ const tempCards: CardTree = {
 
 const Home = () => {
   const [cards, setCards] = useState<CardType[]>([]);
-  const [gone, setGone] = useState(() => new Set<number>());
+  const [prevCards, setPrevCards] = useState(() => new Set<string>());
+  const [gone, setGone] = useState<AnswerKeyType>({});
   const [topCardIndex, setTopCardIndex] = useState<number>(-1);
-  // const topCardIndex: number = Math.min.apply(null, [cards.length - gone.size, ...gone]) - 1;
-  // const [answers, setAnswers] = useState<CardType[]>([]);
-
-  // const updateCards = (index: number, card: CardType) => {
-  //   setCards((prevState) => {
-  //     const newState = [...prevState];
-  //     newState[index] = card;
-  //     return newState;
-  //   });
-  // };
 
   useEffect(() => {
+    // TODO fetch card tree from database, then set in state here
     let newCards: CardType[] = [...cards];
     if (cards.length === 0) {
       newCards = Array.from({length: tempCards.maxLength}, (value, index) => {
-        return {...blankCard, title: `Card ${index}`};
+        // Fill with blank cards except top card on initiation
+        return {...blankCard, key: 'blank' + (cards.length + index + 1)};
       });
       newCards[newCards.length - 1] = tempCards.cards.start;
       setCards(newCards);
     }
   }, []);
 
-  useEffect(() => {
-    // Calculate topCardIndex whenever cards or gone changes
-    console.log('gone or cards changed:', [cards.length - gone.size, ...gone]);
-    const newTopCardIndex = Math.min.apply(null, [cards.length - gone.size, ...gone]) - 1;
-    // console.log(`cards.length: ${cards.length} - gone.size: ${gone.size}, topCardIndex: ${topCardIndex}, newTopCardIndex: ${newTopCardIndex}`);
-    setTopCardIndex(newTopCardIndex);
-  }, [cards.length, gone]);
 
-  useEffect(() => {
-    console.log('cards:', cards);
-  }, [cards.length]);
+  // useEffect(() => {
+  //   console.log('cards:', cards);
+  // }, [cards]);
+
+  // useEffect(() => {
+  //   console.log('gone:', gone);
+  // }, [gone]);
 
   // useEffect(() => {
   //   console.log('current topcard:', topCardIndex);
   // }, [topCardIndex]);
 
   useEffect(() => {
-    console.log('gone:', gone);
-  }, [gone]);
+    // Calculate topCardIndex whenever cards or gone changes
+    // console.log('gone or cards changed:', [cards.length - gone.size, ...gone]);
+    // const newTopCardIndex = Math.min.apply(null, [cards.length - gone.size, ...gone]) - 1;
+    const newTopCardIndex = cards.length - Object.keys(gone).length - 1;
+    // console.log(`cards.length: ${cards.length} - gone.size: ${gone.size}, topCardIndex: ${topCardIndex}, newTopCardIndex: ${newTopCardIndex}`);
+    setTopCardIndex(newTopCardIndex);
+  }, [cards.length, gone]);
+
+  useEffect(() => {
+    if (topCardIndex === -1 || cards.length === 0) {
+      return;
+    }
+
+    // console.log('gone:', gone);
+    const required = new Set<string>();
+    Object.keys(gone).forEach((key) => {
+      const answerOwner: CardType = tempCards.cards[key];
+      const answer: Direction = gone[key].answer;
+      // console.log('answer:', answer);
+      // console.log('answerOwner:', answerOwner.key);
+      // console.log('currentCard:', answerOwner);
+      const nextCard = answerOwner.next[answer];
+      required.add(nextCard);
+    });
+    // console.log('required:', required);
+    // console.log('prevCards:', prevCards);
+    // console.log('difference:', difference(required, prevCards));
+    const nextKey:string = Array.from(difference(required, prevCards))[0];
+    if (!nextKey) {
+      return;
+    }
+    // console.log('nextKey:', nextKey);
+    const nextCard = tempCards.cards[nextKey];
+    // console.log('nextCard:', nextCard);
+    setCards((currentCards) => {
+      const newCards = [...currentCards];
+      // console.log('newCards:', newCards);
+      // console.log('gone topCardIndex:', topCardIndex);
+      // console.log('replacing:', newCards[topCardIndex]);
+      newCards[topCardIndex] = nextCard;
+      setPrevCards((prevState) => {
+        const newSet = new Set(prevState);
+        // console.log('newCards[topCardIndex].key:', newCards[topCardIndex]);
+        newSet.delete(newCards[topCardIndex].key);
+        newSet.add(nextKey);
+        return newSet;
+      });
+      return newCards;
+    });
+  }, [topCardIndex]);
 
   if (cards.length === 0) {
     return (
@@ -315,55 +349,32 @@ const Home = () => {
     });
   };
 
-  const updateGone = (index: number) => {
-    // Reset all the cards if index is negative
-    if (index < 0) {
-      setGone(new Set());
-    } else {
-      setGone((prevGone) => {
-        const newGone = new Set(prevGone);
-        newGone.add(index);
-        return newGone;
-      });
-    }
+  const clearGone = () => {
+    setGone({});
   };
 
-  const changeCard = () => {
-    const newCards = [...cards];
-    newCards[newCards.length - 1] = {...blankCard, title: 'TEST CHANGE', description: 'new description hello karen yadda yada meoew oewowe'};
-    setCards(newCards);
+  const updateGone = (key: string, direction: Direction) => {
+    setGone((prevGone) => ({
+      ...prevGone,
+      [key]: {
+        answer: direction,
+        // dir: 1000 * Math.random(),
+      },
+    }));
   };
-
-  const addCard = () => {
-    console.log('cards before:', cards);
-    const newCards = [...cards];
-    // newCards.unshift({...blankCard, title: `ADDED ${newCards.length + 1}`, description: 'ADDED THIS CARD'});
-    // newCards.push({...blankCard, title: `ADDED ${newCards.length + 1}`, description: 'ADDED THIS CARD'});
-    newCards.splice(topCardIndex + 1, 0, {...blankCard, title: `ADDED ${newCards.length + 1}`, description: 'ADDED THIS CARD'});
-    setCards(newCards);
-    // increase all the numbers in the set gone by 1:
-    setGone((prevGone) => {
-      const newGone = new Set<number>();
-      prevGone.forEach((i) => newGone.add(i + 1));
-
-      // console.log('newGone:', newGone);
-      return newGone;
-    });
-    // setCards(newCards);
-  };
-
 
   return (
     <div className={styles.pageContainer}>
-      <button className={styles.options} onClick={changeCard}>Change Card</button>
-      <button className={styles.options2} onClick={addCard}>Add Card</button>
       <Deck
         cards={cards}
-        gone={gone}
-        setGone={updateGone}
-        resetPositions={resetPositions}
         topCardIndex={topCardIndex}
-        updateCardPosition={updateCardPosition}
+        gone={gone}
+        clearGone={clearGone}
+        setGone={updateGone}
+        prevCards={prevCards}
+        setPrevCards={setPrevCards}
+        resetPositions={resetPositions}
+        setCardPosition={updateCardPosition}
       />
     </div>
   );

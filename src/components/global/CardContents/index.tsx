@@ -264,7 +264,6 @@ const CardContents = (
         }
       </div>
       <div className={styles.index}>{numCards - index}/{numCards}</div>
-      {/* <div className={styles.index}>{index}</div> */}
     </div>
   );
 };
