@@ -1,7 +1,7 @@
 
 // import React, {useEffect, useState} from 'react';
 // import React, {useEffect} from 'react';
-import React from 'react';
+// import React from 'react';
 import {Switch, Route, BrowserRouter} from 'react-router-dom';
 
 import {
@@ -15,6 +15,8 @@ import {
 } from './components/pages';
 
 import './css/App.scss';
+
+// eslint-disable-next-line new-cap
 
 
 // import {isTouchDevice} from './components/shared/helpers';

@@ -12,16 +12,27 @@ export type CardType = {
   description: string;
   question: string;
   position?: {x: number, y: number}
+  visible?: boolean;
   options: OptionType;
-  next: {[key: string]: string};
+  // next: {[key: string]: string};
+  next: {[key in Direction]?: string};
   // TODO
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  scores: {[key: string]: any};
+  scores: {[key in Direction]?: any};
 };
 
 export type CardTree = {
-  maxLength: number,
-  cards: {[key: string]: CardType}
+  title: string;
+  maxLength: number;
+  cards: {[key: string]: CardType};
+}
+
+export type IndexType = {
+  index: number;
+}
+
+export type CardIndex = {
+  [key: string]: IndexType;
 }
 
 export type Direction = 'up' | 'down' | 'left' | 'right';

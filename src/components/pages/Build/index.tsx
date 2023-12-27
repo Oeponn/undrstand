@@ -1,12 +1,11 @@
 import React from 'react';
 import styles from './styles.module.scss';
-
-const Home = () => {
+const Build = () => {
   return (
-    <div className={styles.cardContainer}>
+    <div className={styles.buildContainer}>
       Hello
     </div>
   );
 };
 
-export default Home;
+export default Build;

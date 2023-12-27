@@ -3,15 +3,16 @@ import React, {useEffect, useRef, useState} from 'react';
 import {useSprings, animated, to as interpolate} from '@react-spring/web';
 import {useDrag} from 'react-use-gesture';
 import CardContents from 'components/global/CardContents';
-import {AnswerKeyType, CardType, Direction} from 'types/deck';
+import {AnswerKeyType, CardType, Direction, CardIndex} from 'types/deck';
 import {
   getDirection,
   getXYFromDirection,
   keyPressDirection,
   keyPressCardPosition,
 } from 'components/shared/helpers';
+import plausible from 'components/global/plausible';
+import {isTouchDevice} from 'components/shared/helpers';
 import styles from './styles.module.scss';
-// import plausibleTracker from 'plausible-tracker';
 
 // const TAP_THRESHOLD = 150;
 const SWIPE_THRESHOLD = 150; // Set a threshold for swipe movement
@@ -20,6 +21,25 @@ const SWIPE_THRESHOLD = 150; // Set a threshold for swipe movement
 //   console.log(`Tapped ${cards[index].title}`);
 // };
 
+const trackSwipe = ({treeKey, cardKey, direction, answer, method}:{
+    treeKey: string,
+    cardKey: string,
+    direction: Direction,
+    answer: string,
+    method?: 'touch' | 'mouse' | 'keyPress',
+  },
+) => {
+  // Track a custom event
+  plausible.trackEvent('ArrowkeyPress', {
+    props: {
+      treeKey,
+      cardKey,
+      direction,
+      answer,
+      method: method ? method : (isTouchDevice() ? 'touch' : 'mouse'),
+    },
+  });
+};
 
 // These two are helpers, they curate spring data, values that are
 // later being interpolated into css
@@ -31,7 +51,7 @@ const stacked = (i: number) => ({
   delay: i * 100,
   opacity: 1,
 });
-const from = (_i: number) => ({x: 0, rot: 0, scale: 1.5, y: -1000, opacity: 0.1});
+const from = (_i: number) => ({x: 0, rot: 0, scale: 1.5, y: -1000, opacity: 0.5});
 // This is being used in the view, it interpolates rotation and
 // scale into a css transform
 const trans = (r: number, s: number) =>
@@ -40,46 +60,61 @@ const trans = (r: number, s: number) =>
 
 // Deck manages the state of all the cards and running the animations
 function Deck({
+  treeKey,
   cards,
+  completed,
   topCardIndex,
   gone,
+  cardIndex,
   clearGone,
   setGone,
   prevCards,
   setPrevCards,
   resetPositions,
   setCardPosition,
+  updateCardVisibility,
 }:{
+  treeKey: string,
   cards: CardType[],
+  completed: boolean,
   topCardIndex: number,
   gone: AnswerKeyType,
+  cardIndex: CardIndex,
   clearGone: () => void,
   setGone: (key: string, direction: Direction) => void,
   prevCards: Set<string>,
   setPrevCards: React.Dispatch<React.SetStateAction<Set<string>>>;
   resetPositions: () => void,
   setCardPosition: (index: number, x: number, y: number) => void
+  updateCardVisibility: (index: number, visible: boolean) => void
 }) {
   const numCards = cards.length;
   const cardsRef = useRef<CardType[]>(cards);
-  const [hide, setHide] = useState(new Set<string>());
   const [delayId, setDelayId] = useState<number[]>([]);
   const [isDown, setIsDown] = useState(-1);
   const [props, api] = useSprings(numCards, () => ({}));
-
-  // const plausible = plausibleTracker({
-  //   domain: 'undrstand.me',
-  // });
-
-  // console.log('plausible:', plausible);
-
+  const stackCards = () => {
+    setTimeout(() => {
+      clearGone();
+      api.start((i: number) => {
+        updateCardVisibility(i, true);
+        return {
+          from: {opacity: 1},
+          ...stacked(i),
+          opacity: 1,
+          config: {friction: 50, tension: 150},
+        };
+      });
+    }, 600);
+    resetPositions();
+  };
 
   const triggerSwipe = (index: number, direction: Direction) => {
     // Update the animation/spring to move the card off-screen
     const currentCards = cardsRef.current;
     api.start((i: number) => {
       if (topCardIndex !== i) return;
-      const keys = Object.keys(cards[index].options);
+      const keys = Object.keys(currentCards[index].options);
       const [x, y] = keyPressCardPosition(keys, direction);
 
       if (!keys.includes(direction)) {
@@ -91,6 +126,14 @@ function Deck({
           config: {friction: 10, tension: 1500},
         };
       }
+      console.log(`Chose ${direction} for card ${currentCards[index].key} for tree ${treeKey} via keyPress`);
+      trackSwipe({
+        treeKey,
+        cardKey: currentCards[index].key,
+        direction,
+        answer: currentCards[index].options[direction] as string,
+        method: 'keyPress',
+      });
 
       const horizontal = Math.abs(x) > Math.abs(y);
       setGone(currentCards[topCardIndex].key, direction);
@@ -130,21 +173,36 @@ function Deck({
     if (Object.keys(gone).length === 0) {
       // If all cards are in deck, clear out any pending transparency
       delayId.forEach((id) => window.clearTimeout(id));
-      setHide(new Set());
+      cards.forEach((_card, index) => {
+        updateCardVisibility(index, true);
+      });
     } else {
       // When a card has been swiped away and its key is not in hidden
       Object.keys(gone).forEach((key) => {
-        if (hide.has(key)) return;
+        // Get the index of the card to update visibility
+        const indexObj = cardIndex[key];
+        if (!indexObj) return;
+        const i = indexObj.index;
+        if (!cards[i].visible) return;
         const id = window.setTimeout(() => {
-          setHide((prevHide) => new Set(prevHide).add(key));
+          updateCardVisibility(cardIndex[key].index, false);
         }, 750);
         setDelayId((prevDelayId) => [...prevDelayId, id]);
       });
     }
-  }, [gone]);
+  // }, [gone]);
+  }, [cardIndex]);
+
+  useEffect(() => {
+    // Re stacks cards when the state above decides it is complete
+    if (completed) {
+      stackCards();
+    }
+  }, [completed]);
 
 
   useEffect(() => {
+    // For updating card animation on initialization and card number changes
     api.start((i: number) => {
       const card = cards[i];
       const isPrevCard = prevCards.has(card.key);
@@ -157,6 +215,7 @@ function Deck({
           // Fall into the deck from the sky
           from: from(i),
           ...stacked(i),
+          config: {friction: 30, tension: 200},
         };
       } else if (Object.keys(gone).includes(card.key)) {
         // An existing card that had already been swiped awway
@@ -181,16 +240,6 @@ function Deck({
       document.removeEventListener('keydown', handleKeyPress);
     };
   }, [topCardIndex, gone]);
-
-  useEffect(() => {
-    if (Object.keys(gone).length === cards.length) {
-      setTimeout(() => {
-        clearGone();
-        api.start((i: number) => stacked(i));
-      }, 600);
-      resetPositions();
-    }
-  }, [gone]);
 
   const bind = useDrag(({
     args: [index], down, movement: [mx, my], direction: [xDir, yDir], velocity, event,
@@ -245,9 +294,18 @@ function Deck({
         // gone.add(index);
         // console.log('swiped:', topCardIndex);
         // console.log('key:', cards[topCardIndex].key);
-        gone[cards[topCardIndex].key] = {answer: getDirection(mx, my)};
+        const direction = getDirection(mx, my);
+        gone[cards[topCardIndex].key] = {answer: direction};
         // setGone(topCardIndex);
-        setGone(cards[topCardIndex].key, getDirection(mx, my));
+        setGone(cards[topCardIndex].key, direction);
+
+        console.log(`Chose ${direction} for card ${cards[index].key} for tree ${treeKey} via Swipe`);
+        trackSwipe({
+          treeKey,
+          cardKey: cards[index].key,
+          direction,
+          answer: cards[index].options[direction] as string,
+        });
       // } else if (duration < TAP_THRESHOLD) {
       //   handleCardtap(index);
       } else {
@@ -274,7 +332,7 @@ function Deck({
         rot,
         scale,
         delay: undefined,
-        config: {friction: 50, tension: down ? 800 : isGone ? 200 : 500},
+        config: {friction: 50, tension: down ? (800) : (isGone ? 200 : 500)},
       };
     });
   });
@@ -293,7 +351,8 @@ function Deck({
               {...bind(i)}
               style={{
                 transform: interpolate([rot, scale], trans),
-                opacity: hide.has(cards[i].key) ? 0 : opacity,
+                opacity: cards[i].visible ? opacity : 0,
+                // border: cards[i].visible ? '5px solid lightblue' : '5px solid red',
               }}
               className={styles.card}
             >

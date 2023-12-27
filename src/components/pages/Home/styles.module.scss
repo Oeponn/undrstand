@@ -17,13 +17,12 @@
   // overflow: hidden;
 }
 
-.options {
+.testButtons {
   position: absolute;
   top: 20px;
   left: 20px;
-}
-.options2 {
-  position: absolute;
-  top: 100px;
-  left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  display: none;
 }
