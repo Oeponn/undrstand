@@ -21,12 +21,13 @@ const SWIPE_THRESHOLD = 150; // Set a threshold for swipe movement
 //   console.log(`Tapped ${cards[index].title}`);
 // };
 
-const trackSwipe = ({treeKey, cardKey, direction, answer, method}:{
+const trackSwipe = ({treeKey, cardKey, direction, answer, method, resultsMode}:{
     treeKey: string,
     cardKey: string,
     direction: Direction,
     answer: string,
     method?: 'touch' | 'mouse' | 'keyPress',
+    resultsMode: boolean,
   },
 ) => {
   // Track a custom event
@@ -37,6 +38,7 @@ const trackSwipe = ({treeKey, cardKey, direction, answer, method}:{
       direction,
       answer,
       method: method ? method : (isTouchDevice() ? 'touch' : 'mouse'),
+      resultsMode,
     },
   });
 };
@@ -63,6 +65,7 @@ function Deck({
   treeKey,
   cards,
   completed,
+  resultsMode,
   topCardIndex,
   gone,
   cardIndex,
@@ -72,11 +75,12 @@ function Deck({
   setPrevCards,
   resetPositions,
   setCardPosition,
-  updateCardVisibility,
+  setCardVisibility,
 }:{
   treeKey: string,
   cards: CardType[],
   completed: boolean,
+  resultsMode: boolean,
   topCardIndex: number,
   gone: AnswerKeyType,
   cardIndex: CardIndex,
@@ -86,7 +90,7 @@ function Deck({
   setPrevCards: React.Dispatch<React.SetStateAction<Set<string>>>;
   resetPositions: () => void,
   setCardPosition: (index: number, x: number, y: number) => void
-  updateCardVisibility: (index: number, visible: boolean) => void
+  setCardVisibility: (index: number, visible: boolean) => void
 }) {
   const numCards = cards.length;
   const cardsRef = useRef<CardType[]>(cards);
@@ -97,7 +101,7 @@ function Deck({
     setTimeout(() => {
       clearGone();
       api.start((i: number) => {
-        updateCardVisibility(i, true);
+        setCardVisibility(i, true);
         return {
           from: {opacity: 1},
           ...stacked(i),
@@ -133,16 +137,19 @@ function Deck({
         direction,
         answer: currentCards[index].options[direction] as string,
         method: 'keyPress',
+        resultsMode,
       });
 
       const horizontal = Math.abs(x) > Math.abs(y);
       setGone(currentCards[topCardIndex].key, direction);
 
+      // if (!resultsMode) {
       if (horizontal) {
         setCardPosition(index, x, 0);
       } else {
         setCardPosition(index, 0, y);
       }
+      // }
 
       return {
         x,
@@ -174,7 +181,7 @@ function Deck({
       // If all cards are in deck, clear out any pending transparency
       delayId.forEach((id) => window.clearTimeout(id));
       cards.forEach((_card, index) => {
-        updateCardVisibility(index, true);
+        setCardVisibility(index, true);
       });
     } else {
       // When a card has been swiped away and its key is not in hidden
@@ -185,7 +192,7 @@ function Deck({
         const i = indexObj.index;
         if (!cards[i].visible) return;
         const id = window.setTimeout(() => {
-          updateCardVisibility(cardIndex[key].index, false);
+          setCardVisibility(cardIndex[key].index, false);
         }, 750);
         setDelayId((prevDelayId) => [...prevDelayId, id]);
       });
@@ -253,11 +260,13 @@ function Deck({
     }
     const horizontal = Math.abs(mx) > Math.abs(my);
 
+    // if (!resultsMode) {
     if (horizontal) {
       setCardPosition(index, mx, 0);
     } else {
       setCardPosition(index, 0, my);
     }
+    // }
 
     xDir = xDir < 0 ? -1 : 1; // Direction should either be left or right
     yDir = yDir < 0 ? -1 : 1; // Up or Down
@@ -305,9 +314,11 @@ function Deck({
           cardKey: cards[index].key,
           direction,
           answer: cards[index].options[direction] as string,
+          resultsMode,
         });
       // } else if (duration < TAP_THRESHOLD) {
       //   handleCardtap(index);
+      // } else if (!resultsMode) {
       } else {
         // setMxPositions state back to 0 so opacity returns to 0
         setCardPosition(index, 0, 0);
@@ -363,6 +374,7 @@ function Deck({
                 isTop={topCardIndex === i}
                 numCards={numCards}
                 position={position}
+                resultsMode={resultsMode}
                 swiped={Object.keys(gone).includes(cards[i].key)}
               />
             </animated.div>

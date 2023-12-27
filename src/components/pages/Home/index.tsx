@@ -270,6 +270,7 @@ const Home = () => {
   const [gone, setGone] = useState<AnswerKeyType>({});
   const [noMoreCards, setNoMoreCards] = useState<boolean>(false);
   const [completed, setCompleted] = useState<boolean>(false);
+  const [resultsMode, setResultsMode] = useState<boolean>(false);
   const [topCardIndex, setTopCardIndex] = useState<number>(-1);
 
   useEffect(() => {
@@ -307,9 +308,9 @@ const Home = () => {
   //   console.log('cards:', cards);
   // }, [cards]);
 
-  // useEffect(() => {
-  //   console.log('gone:', gone);
-  // }, [gone]);
+  useEffect(() => {
+    console.log('gone:', gone);
+  }, [gone]);
 
   // useEffect(() => {
   //   console.log('current topcard:', topCardIndex);
@@ -326,7 +327,11 @@ const Home = () => {
 
   useEffect(() => {
     // After a card is swiped or added, decide next action/card
-    if (cards.length === 0 || topCardIndex === cards.length - 1) {
+    if ((
+      cards.length === 0||
+      topCardIndex === cards.length - 1 ||
+      resultsMode
+    )) {
       return;
     }
     // Iterate through all swiped cards and get keys from answered cards
@@ -388,6 +393,7 @@ const Home = () => {
     if (Object.keys(gone).length === cards.length && noMoreCards) {
       console.log('completed!');
       setCompleted(true);
+      setResultsMode(true);
     }
   }, [gone, noMoreCards]);
 
@@ -493,6 +499,7 @@ const Home = () => {
         treeKey={tempCards.title}
         cards={cards}
         completed={completed}
+        resultsMode={resultsMode}
         topCardIndex={topCardIndex}
         gone={gone}
         cardIndex={cardIndex}
@@ -502,7 +509,7 @@ const Home = () => {
         setPrevCards={setPrevCards}
         resetPositions={resetPositions}
         setCardPosition={updateCardPosition}
-        updateCardVisibility={updateCardVisibility}
+        setCardVisibility={updateCardVisibility}
       />
     </div>
   );

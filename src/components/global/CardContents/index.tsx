@@ -101,7 +101,7 @@ const Option = ({
 };
 
 const CardContents = (
-    {card, index, isDown, isTop, numCards, position, swiped}:
+    {card, index, isDown, isTop, numCards, position, resultsMode, swiped}:
     {
       card: CardType,
       index: number,
@@ -109,6 +109,7 @@ const CardContents = (
       isTop: boolean,
       numCards: number,
       position?: {x: number, y: number},
+      resultsMode: boolean,
       swiped: boolean,
     },
 ) => {
@@ -163,7 +164,7 @@ const CardContents = (
   }, [isDown]);
 
   useEffect(() => {
-    if (swiped) {
+    if (swiped && !resultsMode) {
       setAnswer(currDir);
     }
     if (swiped && !pressed) {
