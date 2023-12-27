@@ -10,7 +10,7 @@ import {
   CardIndex,
 } from 'types/deck';
 import {difference} from 'components/shared/helpers';
-// import plausible from 'components/global/plausible';
+// import plausible from 'components/shared/plausible';
 import styles from './styles.module.scss';
 
 const blankCard: CardType = {
@@ -308,9 +308,9 @@ const Home = () => {
   //   console.log('cards:', cards);
   // }, [cards]);
 
-  useEffect(() => {
-    console.log('gone:', gone);
-  }, [gone]);
+  // useEffect(() => {
+  //   console.log('gone:', gone);
+  // }, [gone]);
 
   // useEffect(() => {
   //   console.log('current topcard:', topCardIndex);
@@ -486,6 +486,7 @@ const Home = () => {
 
   const printCards = () => {
     console.log('cards:', cards);
+    console.log('resultsMode:', resultsMode);
   };
 
   return (
@@ -493,10 +494,10 @@ const Home = () => {
       <div className={styles.testButtons}>
         <button onClick={() => setCompleted(true)}>setCompleted</button>
         <button onClick={() => addCard()}>Add Card</button>
-        <button onClick={printCards}>print</button>
+        <button onClick={printCards}>print button</button>
       </div>
       <Deck
-        treeKey={tempCards.title}
+        // treeKey={tempCards.title}
         cards={cards}
         completed={completed}
         resultsMode={resultsMode}

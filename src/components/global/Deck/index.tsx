@@ -10,8 +10,8 @@ import {
   keyPressDirection,
   keyPressCardPosition,
 } from 'components/shared/helpers';
-import plausible from 'components/global/plausible';
-import {isTouchDevice} from 'components/shared/helpers';
+// import plausible, {trackAnswer} from 'components/shared/plausible';
+import plausible from 'components/shared/plausible';
 import styles from './styles.module.scss';
 
 // const TAP_THRESHOLD = 150;
@@ -20,28 +20,6 @@ const SWIPE_THRESHOLD = 150; // Set a threshold for swipe movement
 // const handleCardtap = (index: number) => {
 //   console.log(`Tapped ${cards[index].title}`);
 // };
-
-const trackSwipe = ({treeKey, cardKey, direction, answer, method, resultsMode}:{
-    treeKey: string,
-    cardKey: string,
-    direction: Direction,
-    answer: string,
-    method?: 'touch' | 'mouse' | 'keyPress',
-    resultsMode: boolean,
-  },
-) => {
-  // Track a custom event
-  plausible.trackEvent('ArrowkeyPress', {
-    props: {
-      treeKey,
-      cardKey,
-      direction,
-      answer,
-      method: method ? method : (isTouchDevice() ? 'touch' : 'mouse'),
-      resultsMode,
-    },
-  });
-};
 
 // These two are helpers, they curate spring data, values that are
 // later being interpolated into css
@@ -62,7 +40,7 @@ const trans = (r: number, s: number) =>
 
 // Deck manages the state of all the cards and running the animations
 function Deck({
-  treeKey,
+  // treeKey,
   cards,
   completed,
   resultsMode,
@@ -77,7 +55,7 @@ function Deck({
   setCardPosition,
   setCardVisibility,
 }:{
-  treeKey: string,
+  // treeKey: string,
   cards: CardType[],
   completed: boolean,
   resultsMode: boolean,
@@ -94,6 +72,8 @@ function Deck({
 }) {
   const numCards = cards.length;
   const cardsRef = useRef<CardType[]>(cards);
+  const topCardIndexRef = useRef<number>(topCardIndex);
+  const resultsModeRef = useRef<boolean>(resultsMode);
   const [delayId, setDelayId] = useState<number[]>([]);
   const [isDown, setIsDown] = useState(-1);
   const [props, api] = useSprings(numCards, () => ({}));
@@ -130,15 +110,15 @@ function Deck({
           config: {friction: 10, tension: 1500},
         };
       }
-      console.log(`Chose ${direction} for card ${currentCards[index].key} for tree ${treeKey} via keyPress`);
-      trackSwipe({
-        treeKey,
-        cardKey: currentCards[index].key,
-        direction,
-        answer: currentCards[index].options[direction] as string,
-        method: 'keyPress',
-        resultsMode,
-      });
+      // console.log(`Chose ${direction} for card ${currentCards[index].key} for tree ${treeKey} via keyPress`);
+      // trackAnswer({
+      //   treeKey,
+      //   cardKey: currentCards[index].key,
+      //   direction,
+      //   answer: currentCards[index].options[direction] as string,
+      //   method: 'keyPress',
+      //   resultsMode,
+      // });
 
       const horizontal = Math.abs(x) > Math.abs(y);
       setGone(currentCards[topCardIndex].key, direction);
@@ -170,11 +150,12 @@ function Deck({
     triggerSwipe(topCardIndex, direction);
   };
 
+  // Update refs that need to be accessed by document eventListeners
   useEffect(() => {
-    // Update cardsRef with the current cards or triggerSwipe can't access
-    // current card value
     cardsRef.current = cards;
-  }, [cards]);
+    topCardIndexRef.current = topCardIndex;
+    resultsModeRef.current = resultsMode;
+  }, [cards, topCardIndex, resultsMode]);
 
   useEffect(() => {
     if (Object.keys(gone).length === 0) {
@@ -240,6 +221,28 @@ function Deck({
       }
     });
   }, [cards.length]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (_event: BeforeUnloadEvent) => {
+      // console.log('User is leaving the page, event:', event);
+      const currentTopCardIndex = topCardIndexRef.current;
+      console.log('User is leaving the page:', currentTopCardIndex);
+      const currentTopCardKey = cardsRef.current[currentTopCardIndex].key;
+      plausible.trackEvent('userLeavePage', {
+        props: {
+          answeredAll: resultsModeRef.current,
+          topCard: currentTopCardKey,
+        },
+      });
+      _event.preventDefault();
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
@@ -308,14 +311,14 @@ function Deck({
         // setGone(topCardIndex);
         setGone(cards[topCardIndex].key, direction);
 
-        console.log(`Chose ${direction} for card ${cards[index].key} for tree ${treeKey} via Swipe`);
-        trackSwipe({
-          treeKey,
-          cardKey: cards[index].key,
-          direction,
-          answer: cards[index].options[direction] as string,
-          resultsMode,
-        });
+        // console.log(`Chose ${direction} for card ${cards[index].key} for tree ${treeKey} via Swipe`);
+        // trackAnswer({
+        //   treeKey,
+        //   cardKey: cards[index].key,
+        //   direction,
+        //   answer: cards[index].options[direction] as string,
+        //   resultsMode,
+        // });
       // } else if (duration < TAP_THRESHOLD) {
       //   handleCardtap(index);
       // } else if (!resultsMode) {

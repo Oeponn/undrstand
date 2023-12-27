@@ -7,7 +7,7 @@ import {Switch, Route, BrowserRouter} from 'react-router-dom';
 import {
   // Footer,
   Header,
-} from './components/global';
+} from './components/shared';
 import {
   Build,
   Home,
