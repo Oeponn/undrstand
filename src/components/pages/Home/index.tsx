@@ -5,6 +5,7 @@ import Deck from 'components/global/Deck';
 import {
   AnswerKeyType,
   CardType,
+  CardTree,
   Direction,
   CardIndex,
 } from 'types/deck';
@@ -13,6 +14,7 @@ import {blankCard, tempCards} from 'components/shared/cardTemplates';
 import styles from './styles.module.scss';
 
 const Home = () => {
+  const [cardTree, setCardTree] = useState<CardTree>();
   const [cards, setCards] = useState<CardType[]>([]);
   const [cardIndex, setIndex] = useState<CardIndex>({});
   const [prevCards, setPrevCards] = useState(() => new Set<string>());
@@ -23,21 +25,80 @@ const Home = () => {
   const [topCardIndex, setTopCardIndex] = useState<number>(-1);
 
   useEffect(() => {
+    return () => {
+      // console.log('unmounting home');
+      if (!cardTree) {
+        return;
+      }
+      localStorage.setItem('undrstandDeckState', JSON.stringify({
+        [cardTree.title]: {
+          treeKey: cardTree.title,
+          cardTree: cardTree,
+          cards: cards,
+          cardIndex: cardIndex,
+          prevCards: prevCards,
+          gone: gone,
+          noMoreCards: noMoreCards,
+          completed: completed,
+          resultsMode: resultsMode,
+          topCardIndex: topCardIndex,
+        }}));
+    };
+  }, []);
+
+  useEffect(() => {
     // TODO fetch card tree from database, then set in state here
+    setCardTree(tempCards);
+  }, []);
+
+  useEffect(() => {
+    if (!cardTree) {
+      return;
+    }
+    const storageState = localStorage.getItem('undrstandDeckState');
+    const parsedState = JSON.parse(storageState || '{}');
+    // console.log('parsedState', parsedState);
+    if (cardTree && Object.prototype.hasOwnProperty.call(parsedState, cardTree.title)) {
+      // console.log('has it all')!;
+      // setCardTree(parsedState[cardTree.title].cardTree);
+      setCards(parsedState[cardTree.title].cards);
+      // setIndex(parsedState[cardTree.title].cardIndex);
+      // setPrevCards(parsedState[cardTree.title].prevCards);
+      // setGone(parsedState[cardTree.title].gone);
+      // setNoMoreCards(parsedState[cardTree.title].noMoreCards);
+      // setCompleted(parsedState[cardTree.title].completed);
+      // setResultsMode(parsedState[cardTree.title].resultsMode);
+      // setTopCardIndex(parsedState[cardTree.title].topCardIndex);
+    }
+    // else {
+    //   let newCards: CardType[] = [...cards];
+    //   if (cards.length === 0) {
+    //     newCards = Array.from({length: cardTree.maxLength}, (value, index) => {
+    //     // Fill with blank cards except top card on initiation
+    //       return {
+    //         ...blankCard,
+    //         key: 'blank' + (cards.length + index + 1),
+    //         visible: false};
+    //     });
+    //     newCards[newCards.length - 1] = cardTree.cards.start;
+    //     setIndex({[cardTree.cards.start.key]: {index: newCards.length - 1}});
+    //     setCards(newCards);
+    //   }
+    // }
     let newCards: CardType[] = [...cards];
     if (cards.length === 0) {
-      newCards = Array.from({length: tempCards.maxLength}, (value, index) => {
+      newCards = Array.from({length: cardTree.maxLength}, (value, index) => {
         // Fill with blank cards except top card on initiation
         return {
           ...blankCard,
           key: 'blank' + (cards.length + index + 1),
           visible: false};
       });
-      newCards[newCards.length - 1] = tempCards.cards.start;
-      setIndex({[tempCards.cards.start.key]: {index: newCards.length - 1}});
+      newCards[newCards.length - 1] = cardTree.cards.start;
+      setIndex({[cardTree.cards.start.key]: {index: newCards.length - 1}});
       setCards(newCards);
     }
-  }, []);
+  }, [cardTree]);
 
   useEffect(() => {
     // every time the card array updates, iterate through and set the index object to be cards[i].key: index
@@ -79,14 +140,15 @@ const Home = () => {
     if ((
       cards.length === 0||
       topCardIndex === cards.length - 1 ||
-      resultsMode
+      resultsMode ||
+      !cardTree
     )) {
       return;
     }
     // Iterate through all swiped cards and get keys from answered cards
     const required = new Set<string>();
     Object.keys(gone).forEach((key) => {
-      const answerOwner: CardType = tempCards.cards[key];
+      const answerOwner: CardType = cardTree.cards[key];
       if (!answerOwner) {
         return;
       }
@@ -111,7 +173,7 @@ const Home = () => {
       return;
     }
     // console.log('nextKey:', nextKey);
-    const nextCard = {...tempCards.cards[nextKey], visible: true};
+    const nextCard = {...cardTree.cards[nextKey], visible: true};
     if (topCardIndex === -1) {
       // If we've run out of cards, add the card
       // console.log('out of cards! adding:', nextCard.key);
@@ -246,7 +308,6 @@ const Home = () => {
         <button onClick={printCards}>print button {window.innerHeight}</button>
       </div>
       <Deck
-        // treeKey={tempCards.title}
         cards={cards}
         completed={completed}
         resultsMode={resultsMode}

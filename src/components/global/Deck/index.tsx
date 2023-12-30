@@ -224,9 +224,8 @@ function Deck({
 
   useEffect(() => {
     const handleBeforeUnload = (_event: BeforeUnloadEvent) => {
-      // console.log('User is leaving the page, event:', event);
       const currentTopCardIndex = topCardIndexRef.current;
-      console.log('User is leaving the page:', currentTopCardIndex);
+      // console.log('User is leaving the page:', currentTopCardIndex);
       const currentTopCardKey = cardsRef.current[currentTopCardIndex].key;
       plausible.trackEvent('userLeavePage', {
         props: {
@@ -353,7 +352,7 @@ function Deck({
 
   return (
     <>
-      {/* <div className={styles.temp}>{topCardIndex}</div> */}
+      <div className={styles.temp}>{topCardIndex}</div>
       {props.map(({x, y, rot, scale, opacity}, i) => {
         const {
           position,

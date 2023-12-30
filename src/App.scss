@@ -25,8 +25,10 @@
   height: calc(100svh + 1px);
   box-sizing: border-box;
   // border: 5px solid #4c525d;
-  background-color: #282c34;
-  overflow: hidden;
+  // background-color: #282c34;
+  background: rgb(59,63,73);
+  background: linear-gradient(180deg, rgba(59,63,73,1) 0%, rgba(40,44,52,1) 35%, rgb(30, 33, 39) 100%);
+overflow: hidden;
   position: relative;
 }
 
@@ -37,8 +39,6 @@
   left: 0;
   position: absolute;
   background-color: black;
-  // background-color: rgb(189, 79, 79);
-  // mix-blend-mode: multiply;
   mix-blend-mode: difference;
   z-index: 1;
   pointer-events: none;
