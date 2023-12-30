@@ -43,7 +43,6 @@
 }
 
 .AppLogo {
-  composes: unselectable from 'css/properties/unselectable.module.scss';
   height: 20vmin;
   min-height: 150px;
   max-height: 300px;

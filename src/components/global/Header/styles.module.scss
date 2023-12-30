@@ -7,55 +7,81 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  // padding-bottom: 30px;
+  background-color: rgb(255, 255, 255, 0.05);
+  position: relative;
 }
 
-.oponn {
-  font-size: 15px;
-}
-
-.linksContainer {
+.navContainer {
   font-size: 16px;
   display: flex;
   flex-direction: row;
   width: 100%;
   max-width: 500px;
   justify-content: space-evenly;
+  gap: 5px;
+  height: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+  position: relative;
 }
 
-.headerLink, .activeLink {
+.navLink {
+  composes: unselectable from "css/properties/unselectable.module.scss";
   font-size: 10px;
-  // color: black;
   color: white;
   flex-shrink: 1;
   flex-grow: 1;
   transition: flex-grow 1000ms linear;
   text-align: center;
+  height: 100%;
+  border-radius: 10px;
+
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+
+  &>:first-child {
+    // border: 1px solid red;
+    width: 24px;
+    height: 24px;
+  }
+
+  &.activeLink {
+    text-shadow:
+      #ffffff 1px 0 5px;
+    background-color: rgb(255, 255, 255, 0.05);
+    position: relative;
+  }
 }
 
-.activeLink {
-  -webkit-text-stroke-width: 1px;
-}
-
-.lineContainer {
-  width: 95%;
-}
-
-.blackLine {
-  border-color: black white white;
-  border-width: 1px;
-  margin: 20px auto 0px;
+.indicator {
+  position: absolute;
+  align-self: center;
+  left: 0;
+  height: calc(100% - 10px);
+  background-color: rgb(255, 255, 255, 0.1);
+  transition:
+    left 0.2s ease,
+    width 0.2s ease;
+  border-radius: 10px;
+  pointer-events: none;
 }
 
 @media screen and (min-width: $mobileBreakpoint) {
   .container {
-    height: $headerHeight-desktop
+    height: $headerHeight-desktop;
   }
 
-  .headerLink {
-    font-size: 16px;
-  }
-  .oponn {
-    font-size: 32px;
+  .navLink {
+    font-size: 10px;
+
+    &.activeLink {
+      text-shadow:
+        #ffffff 1px 0 10px,
+        #ffffff 1px 0 10px;
+    }
   }
 }

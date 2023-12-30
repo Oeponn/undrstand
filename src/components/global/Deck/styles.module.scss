@@ -17,11 +17,6 @@ $hoverColor: rgb(91, 96, 98);
 .card {
   border: 2px solid rgb(255, 255, 255);
   background-color: black;
-  // background-color: white;
-
-  background-size: auto 75%;
-  background-repeat: no-repeat;
-  background-position: top 20px center;
   width: 45vh;
   max-width: 225px;
   height: 85vh;
@@ -44,10 +39,6 @@ $hoverColor: rgb(91, 96, 98);
 }
 
 @media screen and (min-width: 480px) {
-  .deck {
-    top: 45%;
-  }
-
   .card {
     max-width: 300px;
     max-height: 525px;

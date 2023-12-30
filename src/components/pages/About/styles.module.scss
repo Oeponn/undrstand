@@ -1,0 +1,24 @@
+@import "css/_dimensions";
+
+.container {
+  position: relative;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100%;
+  min-height: 450px;
+  width: 100%;
+  box-sizing: border-box;
+  color: white;
+  padding: 0 20px;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+@media screen and (min-width: $mobileBreakpoint) {
+  .container {
+    padding: 0 20%;
+  }
+}

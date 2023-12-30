@@ -1,20 +1,22 @@
 
-// import React, {useEffect, useState} from 'react';
+// import React, {useLayoutEffect, useState} from 'react';
 // import React, {useEffect} from 'react';
 // import React from 'react';
 import {Switch, Route, BrowserRouter} from 'react-router-dom';
-
+import {useTheme} from 'components/contexts/ThemeContext';
 import {
   // Footer,
   Header,
 } from './components/shared';
 import {
+  About,
   Build,
   Home,
+  Settings,
   // PageNotFound,
 } from './components/pages';
 
-import './css/App.scss';
+import './App.scss';
 
 // eslint-disable-next-line new-cap
 
@@ -22,8 +24,26 @@ import './css/App.scss';
 // import {isTouchDevice} from './components/shared/helpers';
 // const touchScreen = isTouchDevice();
 
+// const useWindowSize = () => {
+//   const [size, setSize] = useState([0, 0]);
+//   useLayoutEffect(() => {
+//     function updateSize() {
+//       setSize([window.innerWidth, window.innerHeight]);
+//     }
+//     window.addEventListener('resize', updateSize);
+//     updateSize();
+//     return () => window.removeEventListener('resize', updateSize);
+//   }, []);
+//   return size;
+// };
+
 
 const App = () => {
+  // const [width, height] = useWindowSize();
+  const {theme} = useTheme();
+  // console.log('theme:', theme);
+
+
   // const [testBackend, setTestBackend] = useState('Loading backend');
   // useEffect(() => {
   //   fetch('/api/test/').then((res) => {
@@ -38,17 +58,29 @@ const App = () => {
   // }, []);
 
   return (
-    <div className="appContainer">
+    <div
+      className="appContainer"
+      // style={
+      //   {width: `${width}px`, height: `${height + 1}px`}
+      // }
+    >
+      <div
+        className='overlay'
+        style={{backgroundColor: theme === 'dark' ? 'black' : 'white'}}
+      />
       <BrowserRouter>
         {/* <Header loggedIn={loggedIn} /> */}
-        <Header />
+        {/* <Header /> */}
         <div className="pageContainer">
           <Switch>
             <Route path="/" component={Home} exact={true} />
             <Route path="/build" component={Build} exact={true} />
+            <Route path="/about" component={About} exact={true} />
+            <Route path="/settings" component={Settings} exact={true} />
             {/* <Route component={PageNotFound} /> */}
           </Switch>
         </div>
+        <Header />
       </BrowserRouter>
 
       {/* <Footer /> */}
