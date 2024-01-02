@@ -3,15 +3,13 @@ import React, {useEffect, useRef, useState} from 'react';
 import {useSprings, animated, to as interpolate} from '@react-spring/web';
 import {useDrag} from 'react-use-gesture';
 import CardContents from 'components/global/CardContents';
-import {AnswerKeyType, CardType, Direction, CardIndex} from 'types/deck';
+import {AnswerKeyType, CardType, CardTree, Direction} from 'types/deck';
 import {
   getDirection,
   getXYFromDirection,
   keyPressDirection,
   keyPressCardPosition,
 } from 'components/shared/helpers';
-// import plausible, {trackAnswer} from 'components/shared/plausible';
-import plausible from 'components/shared/plausible';
 import styles from './styles.module.scss';
 
 // const TAP_THRESHOLD = 150;
@@ -31,57 +29,62 @@ const stacked = (i: number) => ({
   delay: i * 100,
   opacity: 1,
 });
-const from = (_i: number) => ({x: 0, rot: 0, scale: 1.5, y: -1000, opacity: 0.5});
+
+const from = (_i: number) => ({x: 0, rot: 0, scale: 1.5, y: -1000, opacity: 1});
 // This is being used in the view, it interpolates rotation and
 // scale into a css transform
 const trans = (r: number, s: number) =>
   `perspective(2500px) rotateX(30deg) rotateY(${r / 10}deg) ` +
   `rotateZ(${r}deg) scale(${s})`;
 
-// Deck manages the state of all the cards and running the animations
+
 function Deck({
-  // treeKey,
-  cards,
-  completed,
+  cardTree,
+  stack,
+  reStack,
   resultsMode,
   topCardIndex,
   gone,
-  cardIndex,
   clearGone,
-  setGone,
+  updateGone,
   prevCards,
   setPrevCards,
   resetPositions,
-  setCardPosition,
-  setCardVisibility,
+  updateCardPosition,
+  updateCardVisibility,
 }:{
   // treeKey: string,
-  cards: CardType[],
-  completed: boolean,
+  cardTree: CardTree,
+  stack: CardType[],
+  reStack: boolean,
   resultsMode: boolean,
   topCardIndex: number,
   gone: AnswerKeyType,
-  cardIndex: CardIndex,
   clearGone: () => void,
-  setGone: (key: string, direction: Direction) => void,
+  updateGone: (key: string, direction: Direction, method: number) => void,
   prevCards: Set<string>,
   setPrevCards: React.Dispatch<React.SetStateAction<Set<string>>>;
   resetPositions: () => void,
-  setCardPosition: (index: number, x: number, y: number) => void
-  setCardVisibility: (index: number, visible: boolean) => void
+  updateCardPosition: (index: number, x: number, y: number) => void
+  updateCardVisibility: (key: string, visible: boolean) => void
 }) {
-  const numCards = cards.length;
-  const cardsRef = useRef<CardType[]>(cards);
+  const numCards = stack.length;
+  const stackRef = useRef<CardType[]>(stack);
   const topCardIndexRef = useRef<number>(topCardIndex);
   const resultsModeRef = useRef<boolean>(resultsMode);
-  const [delayId, setDelayId] = useState<number[]>([]);
+  const goneRef = useRef<AnswerKeyType>(gone);
+  const updateGoneRef = useRef<(
+      key: string,
+      direction: Direction,
+      method: number
+  ) => void>(updateGone);
   const [isDown, setIsDown] = useState(-1);
   const [props, api] = useSprings(numCards, () => ({}));
   const stackCards = () => {
     setTimeout(() => {
       clearGone();
       api.start((i: number) => {
-        setCardVisibility(i, true);
+        updateCardVisibility(stack[i].key, true);
         return {
           from: {opacity: 1},
           ...stacked(i),
@@ -89,15 +92,16 @@ function Deck({
           config: {friction: 50, tension: 150},
         };
       });
-    }, 600);
+    }, 1000);
     resetPositions();
   };
 
   const triggerSwipe = (index: number, direction: Direction) => {
     // Update the animation/spring to move the card off-screen
-    const currentCards = cardsRef.current;
+    const currentCards = stackRef.current;
     api.start((i: number) => {
-      if (topCardIndex !== i) return;
+      if (topCardIndexRef.current !== i) return;
+      // if (topCardIndex !== i) return;
       const keys = Object.keys(currentCards[index].options);
       const [x, y] = keyPressCardPosition(keys, direction);
 
@@ -110,24 +114,21 @@ function Deck({
           config: {friction: 10, tension: 1500},
         };
       }
-      // console.log(`Chose ${direction} for card ${currentCards[index].key} for tree ${treeKey} via keyPress`);
-      // trackAnswer({
-      //   treeKey,
-      //   cardKey: currentCards[index].key,
-      //   direction,
-      //   answer: currentCards[index].options[direction] as string,
-      //   method: 'keyPress',
-      //   resultsMode,
-      // });
+      const key = currentCards[index].key;
 
       const horizontal = Math.abs(x) > Math.abs(y);
-      setGone(currentCards[topCardIndex].key, direction);
+      const currentUpdateGone = updateGoneRef.current;
+      const currentGone = goneRef.current;
+
+      // Non stateful preUpdate before state update
+      currentGone[key] = direction;
+      currentUpdateGone(key, direction, 1);
 
       // if (!resultsMode) {
       if (horizontal) {
-        setCardPosition(index, x, 0);
+        updateCardPosition(index, x, 0);
       } else {
-        setCardPosition(index, 0, y);
+        updateCardPosition(index, 0, y);
       }
       // }
 
@@ -141,76 +142,76 @@ function Deck({
     });
   };
 
-  const handleKeyPress = (event: KeyboardEvent) => {
-    const key = event.key;
-    const direction = keyPressDirection[key as keyof typeof keyPressDirection];
-    if (!Object.keys(keyPressDirection).includes(key)) {
-      return;
-    }
-    triggerSwipe(topCardIndex, direction);
-  };
+  // Add event listeners for clicking arrowkeys, and also for page exit/refresh
+  useEffect(() => {
+    // keyPress handler for four arrow keys
+    const handleKeyPress = (event: KeyboardEvent) => {
+      const keyPressed: string = event.key;
+      if (!Object.keys(keyPressDirection).includes(keyPressed)) {
+        return;
+      }
+      const direction: Direction = keyPressDirection[keyPressed];
+      triggerSwipe(topCardIndexRef.current, direction);
+    };
+
+    document.addEventListener('keydown', handleKeyPress);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, []);
 
   // Update refs that need to be accessed by document eventListeners
   useEffect(() => {
-    cardsRef.current = cards;
+    stackRef.current = stack;
     topCardIndexRef.current = topCardIndex;
     resultsModeRef.current = resultsMode;
-  }, [cards, topCardIndex, resultsMode]);
-
-  useEffect(() => {
-    if (Object.keys(gone).length === 0) {
-      // If all cards are in deck, clear out any pending transparency
-      delayId.forEach((id) => window.clearTimeout(id));
-      cards.forEach((_card, index) => {
-        setCardVisibility(index, true);
-      });
-    } else {
-      // When a card has been swiped away and its key is not in hidden
-      Object.keys(gone).forEach((key) => {
-        // Get the index of the card to update visibility
-        const indexObj = cardIndex[key];
-        if (!indexObj) return;
-        const i = indexObj.index;
-        if (!cards[i].visible) return;
-        const id = window.setTimeout(() => {
-          setCardVisibility(cardIndex[key].index, false);
-        }, 750);
-        setDelayId((prevDelayId) => [...prevDelayId, id]);
-      });
-    }
-  // }, [gone]);
-  }, [cardIndex]);
+    goneRef.current = gone;
+    updateGoneRef.current = updateGone;
+  }, [stack, topCardIndex, resultsMode, gone, updateGone]);
 
   useEffect(() => {
     // Re stacks cards when the state above decides it is complete
-    if (completed) {
+    if (reStack) {
       stackCards();
     }
-  }, [completed]);
+  }, [reStack]);
 
 
   useEffect(() => {
     // For updating card animation on initialization and card number changes
     api.start((i: number) => {
-      const card = cards[i];
+      const card = stack[i];
+      const key = card.key;
       const isPrevCard = prevCards.has(card.key);
       if (!isPrevCard) {
         // If the card is new, animate it and add its key to prevCards
         setPrevCards((prevCards: Set<string>) => {
           return new Set(prevCards).add(card.key);
         });
+        updateCardVisibility(stack[i].key, true);
+        const to = {...stacked(i)};
+        if (gone[key]) {
+          const answer = gone[key];
+          return {
+            // Keep in same place, bugs out if from: is not specified
+            from: {...getXYFromDirection(answer)},
+            ...getXYFromDirection(answer),
+            opacity: 0,
+          };
+        }
         return {
           // Fall into the deck from the sky
           from: from(i),
-          ...stacked(i),
+          ...to,
           config: {friction: 30, tension: 200},
         };
       } else if (Object.keys(gone).includes(card.key)) {
         // An existing card that had already been swiped awway
         return {
           // Keep in same place, bugs out if from: is not specified
-          from: {...getXYFromDirection(gone[card.key].answer)},
-          ...getXYFromDirection(gone[card.key].answer),
+          from: {...getXYFromDirection(gone[card.key])},
+          ...getXYFromDirection(gone[card.key]),
           opacity: 0,
         };
       } else {
@@ -220,40 +221,12 @@ function Deck({
         };
       }
     });
-  }, [cards.length]);
-
-  useEffect(() => {
-    const handleBeforeUnload = (_event: BeforeUnloadEvent) => {
-      const currentTopCardIndex = topCardIndexRef.current;
-      // console.log('User is leaving the page:', currentTopCardIndex);
-      const currentTopCardKey = cardsRef.current[currentTopCardIndex].key;
-      plausible.trackEvent('userLeavePage', {
-        props: {
-          answeredAll: resultsModeRef.current,
-          topCard: currentTopCardKey,
-        },
-      });
-      _event.preventDefault();
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, []);
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyPress);
-    return () => {
-      document.removeEventListener('keydown', handleKeyPress);
-    };
-  }, [topCardIndex, gone]);
+  }, [stack.length]);
 
   const bind = useDrag(({
     args: [index], down, movement: [mx, my], direction: [xDir, yDir], velocity, event,
   }) => {
-    if (Object.keys(cards[index].options).length == 2) {
+    if (Object.keys(stack[index].options).length == 2) {
       my = 0;
     }
     // If the card being clicked is not the top card, ignore
@@ -262,13 +235,11 @@ function Deck({
     }
     const horizontal = Math.abs(mx) > Math.abs(my);
 
-    // if (!resultsMode) {
     if (horizontal) {
-      setCardPosition(index, mx, 0);
+      updateCardPosition(index, mx, 0);
     } else {
-      setCardPosition(index, 0, my);
+      updateCardPosition(index, 0, my);
     }
-    // }
 
     xDir = xDir < 0 ? -1 : 1; // Direction should either be left or right
     yDir = yDir < 0 ? -1 : 1; // Up or Down
@@ -301,35 +272,21 @@ function Deck({
       // const duration = Date.now() - dragStartTime;
 
       if (dropped || swiped) {
-        // console.log('dropped:', dropped, 'swiped:', swiped);
-        // gone.add(index);
-        // console.log('swiped:', topCardIndex);
-        // console.log('key:', cards[topCardIndex].key);
         const direction = getDirection(mx, my);
-        gone[cards[topCardIndex].key] = {answer: direction};
-        // setGone(topCardIndex);
-        setGone(cards[topCardIndex].key, direction);
-
-        // console.log(`Chose ${direction} for card ${cards[index].key} for tree ${treeKey} via Swipe`);
-        // trackAnswer({
-        //   treeKey,
-        //   cardKey: cards[index].key,
-        //   direction,
-        //   answer: cards[index].options[direction] as string,
-        //   resultsMode,
-        // });
+        gone[stack[topCardIndex].key] = direction;
+        updateGone(stack[topCardIndex].key, direction, 0);
       // } else if (duration < TAP_THRESHOLD) {
       //   handleCardtap(index);
       // } else if (!resultsMode) {
       } else {
         // setMxPositions state back to 0 so opacity returns to 0
-        setCardPosition(index, 0, 0);
+        updateCardPosition(index, 0, 0);
       }
     }
     api.start((i: number) => {
       // We're only interested in changing spring-data for the current spring
       if (index !== i) return;
-      const isGone = Object.keys(gone).includes(cards[index].key);
+      const isGone = Object.keys(gone).includes(stack[index].key);
       // When a card is gone it flys out left or right, otherwise goes back to 0
       // Go offscreen on same side card is on, not swipe direction
       const xDirection = Math.sign(mx);
@@ -352,32 +309,36 @@ function Deck({
 
   return (
     <>
-      <div className={styles.temp}>{topCardIndex}</div>
       {props.map(({x, y, rot, scale, opacity}, i) => {
         const {
           position,
           key,
-        } = cards[i];
+        } = stack[i];
+
+        // console.log('cardTree:', cardTree);
+        // console.log('key:', key);
+        // console.log('stack:', stack);
+        // console.log('cardTree.cards[key]:', cardTree.cards[key]);
         return (
           <animated.div className={styles.deck} key={key} style={{x, y}}>
             <animated.div
               {...bind(i)}
               style={{
                 transform: interpolate([rot, scale], trans),
-                opacity: cards[i].visible ? opacity : 0,
-                // border: cards[i].visible ? '5px solid lightblue' : '5px solid red',
+                opacity: cardTree.cards[key].visible ? opacity : 0,
+                // border: cardTree.cards[cards[i].key].visible ? '5px solid blue' : '5px solid red',
               }}
               className={styles.card}
             >
               <CardContents
-                card={cards[i]}
+                card={cardTree.cards[key]}
                 index={i}
                 isDown={isDown === i}
                 isTop={topCardIndex === i}
                 numCards={numCards}
                 position={position}
                 resultsMode={resultsMode}
-                swiped={Object.keys(gone).includes(cards[i].key)}
+                swiped={Object.keys(gone).includes(key)}
               />
             </animated.div>
           </animated.div>

@@ -25,7 +25,10 @@ $hoverColor: rgb(91, 96, 98);
 
   background: rgb(25,25,25);
   background: rgb(32,37,46);
-background: radial-gradient(circle, rgba(32,37,46,1) 0%, rgba(24,26,31,1) 76%, rgba(22,22,24,1) 100%);
+  background: -moz-radial-gradient(circle, rgba(32,37,46,1) 0%, rgba(32,36,42,1) 18%, rgba(24,26,31,1) 46%, rgba(24,27,33,1) 81%);
+  background: -webkit-radial-gradient(circle, rgba(32,37,46,1) 0%, rgba(32,36,42,1) 18%, rgba(24,26,31,1) 46%, rgba(24,27,33,1) 81%);
+  background: radial-gradient(circle, rgba(32,37,46,1) 0%, rgba(32,36,42,1) 18%, rgba(24,26,31,1) 46%, rgba(24,27,33,1) 81%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#20252e",endColorstr="#181b21",GradientType=1);
 
   padding: 20px 10px;
   border-radius: 10px;
@@ -53,11 +56,4 @@ background: radial-gradient(circle, rgba(32,37,46,1) 0%, rgba(24,26,31,1) 76%, r
     justify-content: flex-start;
     cursor: pointer;
   }
-}
-
-.temp {
-  display: none;
-  position: absolute;
-  top: 20px;
-  right: 20px;
 }

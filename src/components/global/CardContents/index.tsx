@@ -2,35 +2,29 @@
 /* eslint-disable max-len */
 import React, {useEffect, useRef, useState} from 'react';
 import Typewriter from 'typewriter-effect';
+import {useTheme} from 'components/contexts/ThemeContext';
+import {CardType, Direction, OptionType} from 'types/deck';
 import styles from './styles.module.scss';
 
 const SWIPE_THRESHOLD = 150; // Set a threshold for swipe movement
 
 const future = [
   'Answer the previous card first.',
+  'This card is waiting for its turn.',
   'No peeking!',
-  'Are you happy with your last decision?',
+  'Patience is a virtue.',
+  'Your future is still unwritten.',
+  'Curiosity didn\'t just kill the cat.',
+  'Focus on the now, not the next.',
+  'One step at a time.',
+  'The best is yet to come.',
   'You cannot cheat fate.',
+  'Stay in the present moment.',
   'Hey! I\'m not going to reveal anything so stop looking.',
+  'Anticipation is part of the journey.',
   'Are you going to sit there and read these all?',
+  'The future is a mystery to be unveiled in due time.',
 ];
-
-type OptionType = {
-  up?: string;
-  right: string;
-  down?: string;
-  left: string;
-};
-
-type CardType = {
-  title: string;
-  description: string;
-  question: string;
-  options: OptionType;
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  scores: { [key: string]: any };
-};
 
 type RefsObject = {
   [key: string]: React.MutableRefObject<any>;
@@ -51,16 +45,20 @@ const Option = ({
   opacity,
   options,
   pressed,
+  resultsMode,
   showOptions,
+  showTyping,
 } : {
-  answer: string,
+  answer: Direction | '',
   currDir: string,
   dir: keyof OptionType,
   isTop: boolean,
   opacity: number,
   options: OptionType,
   pressed: boolean,
+  resultsMode: boolean,
   showOptions: boolean,
+  showTyping: boolean,
 }) => {
   const selectedStyle: React.CSSProperties = {
     backgroundColor: `rgba(91, 96, 98, ${opacity})`,
@@ -84,7 +82,7 @@ const Option = ({
   }
 
   // If pressed, we want the options to appear without fade/delay
-  if (pressed) {
+  if (pressed || resultsMode || !showTyping) {
     optionClasses = [styles.optionText, styles.appear].join(' ');
   }
 
@@ -138,7 +136,7 @@ const CardContents = (
   const [init, setInit] = useState(false);
   const [pressed, setPressed] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
-  const [answer, setAnswer] = useState('');
+  const {showTyping} = useTheme();
 
   // Color opacity for option being selected by swipe, biggest x y distance
   const opacity = 2 * Math.max(
@@ -164,9 +162,6 @@ const CardContents = (
   }, [isDown]);
 
   useEffect(() => {
-    if (swiped && !resultsMode) {
-      setAnswer(currDir);
-    }
     if (swiped && !pressed) {
       setPressed(true);
       setShowOptions(true);
@@ -187,7 +182,7 @@ const CardContents = (
       } else {
         refs.description.current
             // .typeString('Decide your previous fate first')
-            .typeString(future[index])
+            .typeString(future[index % 6])
             .start();
       }
     }
@@ -215,7 +210,7 @@ const CardContents = (
     <div className={styles.contentsContainer}>
       <p className={styles.title}>{title}</p>
       <div className={styles.descriptionContainer}>
-        {pressed ?
+        {pressed || resultsMode || !showTyping ?
         <div className={styles.description}>{description}</div> :
         <Typewriter
           options={{
@@ -231,7 +226,7 @@ const CardContents = (
         />}
       </div>
       <div className={styles.questionContainer}>
-        {pressed ?
+        {pressed || resultsMode || !showTyping ?
         <p className={styles.question}>{question}</p> :
           <Typewriter
             options={{
@@ -250,7 +245,7 @@ const CardContents = (
           Object.keys(options).map((key: string) => {
             return (
               <Option
-                answer={answer}
+                answer={card.answer}
                 currDir={currDir}
                 dir={key as keyof OptionType}
                 isTop={isTop}
@@ -258,7 +253,9 @@ const CardContents = (
                 opacity={opacity}
                 options={options}
                 pressed={pressed}
+                resultsMode={resultsMode}
                 showOptions={showOptions}
+                showTyping={showTyping}
               />
             );
           })

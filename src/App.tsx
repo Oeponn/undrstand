@@ -69,7 +69,6 @@ const App = () => {
         style={{backgroundColor: theme === 'dark' ? 'black' : 'white'}}
       />
       <BrowserRouter>
-        {/* <Header loggedIn={loggedIn} /> */}
         {/* <Header /> */}
         <div className="pageContainer">
           <Switch>

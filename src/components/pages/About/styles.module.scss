@@ -17,8 +17,22 @@
   overflow-y: auto;
 }
 
+.linkWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.link {
+  color: white;
+
+  &:hover {
+    -webkit-text-stroke-width: 1px;
+  }
+}
+
 @media screen and (min-width: $mobileBreakpoint) {
   .container {
-    padding: 0 20%;
+    padding: 0 30%;
   }
 }

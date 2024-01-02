@@ -2,8 +2,34 @@
 import styles from './styles.module.scss';
 const About = () => {
   return (
-    <div className={styles.container} onClick={() => console.log('Test abt')}>
+    <div className={styles.container}>
       <h1>About Page</h1>
+      <div className={styles.linkWrapper}>
+        <a
+          className={styles.link}
+          href="https://www.linkedin.com/in/tiger-shi/"
+          rel="noreferrer"
+          target="_blank">
+            LinkedIn
+          <span style={{transform: 'scale(0.6)'}} className="material-symbols-outlined">outbound</span>
+        </a>
+        <a
+          className={styles.link}
+          href="https://tigershi.com/"
+          rel="noreferrer"
+          target="_blank">
+            Personal
+          <span style={{transform: 'scale(0.6)'}} className="material-symbols-outlined">outbound</span>
+        </a>
+        <a
+          className={styles.link}
+          href="https://github.com/Oeponn/"
+          rel="noreferrer"
+          target="_blank">
+            Github
+          <span style={{transform: 'scale(0.6)'}} className="material-symbols-outlined">outbound</span>
+        </a>
+      </div>
       <p>
         I did a really whimsical personality test and decided that I wanted
         to make my own, but with more interesting UI. I think swiping is pretty
@@ -19,7 +45,7 @@ const About = () => {
         surveys to full on personality tests or choose your own adventures with dynamic tree pathing and answer weighting.
         The plan is to allow users to create and share tests with friends, and
         also have the option to privatize the final result distribution for
-        personal use if you make an account... perhaps.
+        personal use if you make an account... perhaps. Thinking about how to make it easy for someone to build one of these.
       </p>
       <h1>Privacy</h1>
       <p>
@@ -31,11 +57,12 @@ const About = () => {
       <h1>Engagement</h1>
       <p>
         If you were to read what companies selling survey tools say, they claim
-        to achieve up to 90% completition rates with a bunch of caveats. Well,
-        undrstand.me on average achieves 400% more actions than what is
+        to achieve up to 90% completition rates with a bunch of caveats. Honestly, I think there are
+        some amazingly talented writers out there and it would be fun to see what they could come up with.
+        {/* Well, undrstand.me on average achieves 400% more actions than what is
         necessary to complete the survey, meaning that after completing the,
         survey, users tend to continue interacting for fun.  I mean of course,
-        if you just make the survey more entertaining, you get more engagement.
+        if you just make the survey more entertaining, you get more engagement. */}
       </p>
     </div>
   );

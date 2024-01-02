@@ -14,6 +14,9 @@ export type CardType = {
   position?: {x: number, y: number}
   visible?: boolean;
   options: OptionType;
+  isGone?: boolean;
+  answer: Direction | '';
+  index?: number;
   // next: {[key: string]: string};
   next: {[key in Direction]?: string};
   // TODO
@@ -31,18 +34,14 @@ export type IndexType = {
   index: number;
 }
 
-export type CardIndex = {
-  [key: string]: IndexType;
-}
-
 export type Direction = 'up' | 'down' | 'left' | 'right';
 
-export type AnswerType = {
-  answer: Direction;
-  // dir: number;
-};
+// export type AnswerType = {
+//   answer: Direction;
+//   // dir: number;
+// };
 
 export type AnswerKeyType = {
-  [key: string]: AnswerType;
+  [key: string]: Direction;
 }
 
