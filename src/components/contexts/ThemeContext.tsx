@@ -25,9 +25,19 @@ export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> =
  ({children}) => {
-   const [theme, setTheme] = useState<Theme>('dark');
-   const [showTyping, setShowTyping] = useState<boolean>(true);
-   const [storeState, setStoreState] = useState<boolean>(true);
+   const storedState = localStorage.getItem('undrstandSettings');
+   let localTheme: Theme = 'dark';
+   let localTyping = true;
+   let localStoreState = true;
+   if (storedState) {
+     const parsedState = JSON.parse(storedState);
+     localTheme = parsedState.theme;
+     localTyping = parsedState.showTyping;
+     localStoreState = parsedState.storeState;
+   }
+   const [theme, setTheme] = useState<Theme>(localTheme);
+   const [showTyping, setShowTyping] = useState<boolean>(localTyping);
+   const [storeState, setStoreState] = useState<boolean>(localStoreState);
 
    //  on load fetch from localstorage and set if present:
    useEffect(() => {

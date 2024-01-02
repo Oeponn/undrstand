@@ -59,8 +59,7 @@ const Settings = () => {
           </div>
           <div className={styles.hint}>
           If you turn this off you can go back to a fresh deck of cards.
-          Right now its not fetching from the database yet, so it might still
-          cache the progress unless you switch tabs, sorry!
+          If you come back later you can always start where you left off.
           </div>
         </div>
         <Checkbox

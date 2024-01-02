@@ -5,12 +5,12 @@ import {isTouchDevice} from 'components/shared/helpers';
 const plausible = plausibleTracker({
   domain: 'undrstand.me', // Replace with your domain
   apiHost: 'https://plausible.undrstand.me',
-  trackLocalhost: true,
+  // trackLocalhost: true,
   // You can add additional options here if needed
 });
 
 export const trackAnswer = ({
-  treeKey, cardKey, direction, answer, method, resultsMode,
+  treeKey, cardKey, direction, answer, method, resultsMode, forFun,
 }:{
   treeKey: string,
   cardKey: string,
@@ -18,6 +18,7 @@ export const trackAnswer = ({
   answer: string,
   method?: 'swipe' | 'keyPress',
   resultsMode: boolean,
+  forFun: boolean,
 },
 ) => {
   // console.log('trackAnswer');
@@ -32,12 +33,13 @@ export const trackAnswer = ({
         (isTouchDevice() ? 'touch' : 'mouse') :
         'keyPress',
       resultsMode,
+      forFun,
     },
   });
 };
 
 export const trackExit = ({
-  treeKey, topCard, answers, actions, swipes, keyPresses, completed,
+  treeKey, topCard, answers, actions, swipes, keyPresses, completed, loaded,
 }: {
   treeKey: string,
   // treeState: CardTree, // Too big to send, 2000 byte value limit, 300 for key
@@ -47,8 +49,13 @@ export const trackExit = ({
   swipes: number,
   keyPresses: number,
   completed: boolean,
+  loaded: boolean,
 }) => {
-  // console.log('trackExit');
+  // console.log('trackExit LOG');
+  // console.log('swipes:', swipes);
+  // console.log('keyPresses:', keyPresses);
+  // console.log('actions:', actions);
+  // console.log('answers:', answers);
   if (completed) {
     plausible.trackEvent('exitBeforeComplete', {
       props: {
@@ -59,6 +66,7 @@ export const trackExit = ({
         actions,
         swipes,
         keyPresses,
+        loaded,
       },
     });
   } else {
@@ -70,6 +78,7 @@ export const trackExit = ({
         actions,
         swipes,
         keyPresses,
+        loaded,
       },
     });
   }

@@ -317,7 +317,7 @@ function Deck({
 
         // console.log('cardTree:', cardTree);
         // console.log('key:', key);
-        // console.log('stack:', stack);
+        // console.log('stack[i]:', stack[i]);
         // console.log('cardTree.cards[key]:', cardTree.cards[key]);
         return (
           <animated.div className={styles.deck} key={key} style={{x, y}}>

@@ -33,6 +33,7 @@ const Home = () => {
   const [delayId, setDelayId] = useState<number[]>([]);
 
   // States for interaction tracking
+  const [loadedFromStorage, setLoadedFromStorage] = useState<boolean>(false);
   const [swipes, setSwipes] = useState<number>(0);
   const [arrowkeyPresses, setArrowkeyPresses] = useState<number>(0);
 
@@ -43,10 +44,10 @@ const Home = () => {
   const reachedEndRef = useRef<boolean>(reachedEnd);
   const swipesRef = useRef<number>(swipes);
   const arrowkeyPressesRef = useRef<number>(arrowkeyPresses);
+  const loadedFromStorageRef = useRef<boolean>(loadedFromStorage);
   const topCardIndexRef = useRef<number>(topCardIndex);
 
   const {storeState} = useTheme();
-  // console.log('storeState:', storeState);
 
   // useEffect(() => {
   //   console.log('gone', gone);
@@ -57,11 +58,11 @@ const Home = () => {
     const storageState = localStorage.getItem('undrstandDeckState');
     const parsedState = JSON.parse(storageState || '{}');
     // console.log('parsedState', parsedState[tempCards.title]);
-
     // eslint-disable-next-line no-constant-condition
     // if (false) {
     if (storeState && Object.keys(parsedState).includes(tempCards.title)) {
       // console.log('existing state found:', tempCards.title, 'in', parsedState[tempCards.title]);
+      setLoadedFromStorage(true);
       setResultsMode(parsedState[tempCards.title].resultsMode);
       setCardTree(parsedState[tempCards.title].cardTree);
     } else {
@@ -113,11 +114,11 @@ const Home = () => {
       }));
     };
 
-    const handleBeforeUnload = (event?: BeforeUnloadEvent) => {
-      if (event) {
-        event.preventDefault();
-      }
-      // console.log('Before unload!');
+    const handleBeforeUnload = (_event?: BeforeUnloadEvent) => {
+      // if (event) {
+      //   console.log('Before unload!');
+      //   event.preventDefault();
+      // }
       beforeUnmount();
       const currentTree = cardTreeRef.current;
       const currentResultsMode = resultsModeRef.current;
@@ -126,28 +127,40 @@ const Home = () => {
       const currentTop = topCardIndexRef.current;
       const currentSwipes = swipesRef.current;
       const currentArrowkeyPresses = arrowkeyPressesRef.current;
+      const fromStorage = loadedFromStorageRef.current;
 
       const answers: AnswerKeyType = {};
-      Object.keys(cardTree.cards).forEach((key) => {
+      Object.keys(currentTree.cards).forEach((key) => {
         const card = currentTree.cards[key];
         if (card.answer) {
           answers[card.key] = card.answer;
         }
       });
-      // console.log('tracking page exit');
       if (currentTree.title === '' || currentStack.length === 0) {
+        // console.log('currentStack or currentTree is empty!');
         return;
       }
-      trackExit({
-        treeKey: currentTree.title,
-        // treeState: currentTree,
-        topCard: currentStack[currentTop].key,
-        answers: answers,
-        actions: currentSwipes + currentArrowkeyPresses,
-        swipes: currentSwipes,
-        keyPresses: currentArrowkeyPresses,
-        completed: currentResultsMode || currentReachedEnd,
-      });
+      // console.log('tracking page exit');
+      // console.log('currentTop:', currentTop);
+      // console.log('currentStack[currentTop].key,:', currentStack[currentTop].key);
+      // console.log('currentSwipes:', currentSwipes);
+      // console.log('answers:', answers);
+
+      // Track if fresh state or loaded from storage but an action was taken
+      if (!fromStorage ||
+        (fromStorage && currentSwipes + currentArrowkeyPresses > 0)) {
+        trackExit({
+          treeKey: currentTree.title,
+          // treeState: currentTree,
+          topCard: currentStack[currentTop].key,
+          answers: answers,
+          actions: currentSwipes + currentArrowkeyPresses,
+          swipes: currentSwipes,
+          keyPresses: currentArrowkeyPresses,
+          completed: currentResultsMode || currentReachedEnd,
+          loaded: fromStorage,
+        });
+      }
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
     // Store the cardTree in localStorage on unmount or refresh
@@ -217,7 +230,12 @@ const Home = () => {
       setReStack(true);
       setResultsMode(true);
     }
-  }, [gone, reachedEnd]);
+    if (resultsMode && Object.keys(gone).length === stack.length) {
+      // Come back to an existing state where all cards swiped but exited page
+      // Without waiting for them to return first
+      setReStack(true);
+    }
+  }, [gone, reachedEnd, resultsMode]);
 
   useEffect(() => {
     // Update refs / refs updater
@@ -228,7 +246,14 @@ const Home = () => {
     swipesRef.current = swipes;
     arrowkeyPressesRef.current = arrowkeyPresses;
     topCardIndexRef.current = topCardIndex;
-  }, [cardTree, resultsMode]);
+    loadedFromStorageRef.current = loadedFromStorage;
+  }, [cardTree,
+    loadedFromStorage,
+    resultsMode,
+    reachedEnd,
+    stack, swipes,
+    arrowkeyPresses,
+    topCardIndex]);
 
   if (stack.length === 0 || cardTree.title === '') {
     return (
@@ -316,6 +341,8 @@ const Home = () => {
       answer: cardTree.cards[key].options[direction] || '',
       method: method === 0 ? 'swipe' : 'keyPress',
       resultsMode,
+      // It is a swipe for fun
+      forFun: !!cardTree.cards[key].answer,
     });
 
 
