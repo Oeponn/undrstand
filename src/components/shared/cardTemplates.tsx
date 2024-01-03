@@ -116,32 +116,6 @@ export const tempCards: CardTree = {
         down: {},
       },
     },
-    // design: {
-    //   key: 'design',
-    //   title: 'The Design',
-    //   description: 'Sometimes I get asked why I insist on making my portfolio so weird looking. Like yeah, I can make conventionally nice UI but in my own time I kind of like to make odd stuff I guess. I have no idea how many recruiters actually look at this because I haven\'t added click tracking yet...',
-    //   question: 'Might as well have fun, eh?',
-    //   visible: true,
-    //   answer: '',
-    //   options: {
-    //     up: 'A more conventional page with dropdowns and such would probably be better...',
-    //     right: 'Could do with a little bit of color at least...',
-    //     left: 'Aren\'t you a full stack dev? Hurry up with the backend...',
-    //     down: 'Go to the next card',
-    //   },
-    //   next: {
-    //     up: 'acceptance',
-    //     right: 'acceptance',
-    //     left: 'acceptance',
-    //     down: 'acceptance',
-    //   },
-    //   scores: {
-    //     up: {},
-    //     right: {},
-    //     left: {},
-    //     down: {},
-    //   },
-    // },
     hired: {
       key: 'hired',
       title: 'Hired',
@@ -379,7 +353,7 @@ export const tempCards: CardTree = {
     closer: {
       key: 'closer',
       title: 'Worrying',
-      description: 'After getting closer, you realize it it truly is a little bit horrifying. It\'s foaming at the mouth, posturing aggressively and gnashing its teeth at you. Its white fur is matted in something crusted and dark.',
+      description: 'After getting closer, you realize it truly is a little bit horrifying. It\'s foaming at the mouth, posturing aggressively and gnashing its teeth at you. Its white fur is matted in something crusted and dark.',
       question: 'There\'s a stick next to you. What do you do?',
       visible: true,
       answer: '',
@@ -449,7 +423,7 @@ export const tempCards: CardTree = {
     hare: {
       key: 'hare',
       title: 'The Hare',
-      description: 'As you walk towards it, you realize the hare is actually much bigger than you thought. Its almost chest height. It blocks your path, eyes bloodshot and little too jittery for comfort',
+      description: 'As you walk towards it, you realize the hare is actually much bigger than you thought. Its almost chest height. It blocks your path, eyes bloodshot and a little too jittery for comfort',
       question: 'What would you like to do?',
       visible: true,
       answer: '',

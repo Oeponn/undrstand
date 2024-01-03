@@ -315,6 +315,9 @@ function Deck({
           key,
         } = stack[i];
 
+        const card = cardTree.cards[key];
+        const visible = card ? card.visible : true;
+
         // console.log('cardTree:', cardTree);
         // console.log('key:', key);
         // console.log('stack[i]:', stack[i]);
@@ -325,7 +328,7 @@ function Deck({
               {...bind(i)}
               style={{
                 transform: interpolate([rot, scale], trans),
-                opacity: cardTree.cards[key].visible ? opacity : 0,
+                opacity: visible ? opacity : 0,
                 // border: cardTree.cards[cards[i].key].visible ? '5px solid blue' : '5px solid red',
               }}
               className={styles.card}

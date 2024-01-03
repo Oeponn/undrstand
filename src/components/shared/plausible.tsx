@@ -51,16 +51,10 @@ export const trackExit = ({
   completed: boolean,
   loaded: boolean,
 }) => {
-  // console.log('trackExit LOG');
-  // console.log('swipes:', swipes);
-  // console.log('keyPresses:', keyPresses);
-  // console.log('actions:', actions);
-  // console.log('answers:', answers);
   if (completed) {
-    plausible.trackEvent('exitBeforeComplete', {
+    plausible.trackEvent('exitAfterComplete', {
       props: {
         treeKey,
-        // treeState: JSON.stringify(treeState),
         topCard,
         answers: JSON.stringify(answers),
         actions,
@@ -70,7 +64,7 @@ export const trackExit = ({
       },
     });
   } else {
-    plausible.trackEvent('exitAfterComplete', {
+    plausible.trackEvent('exitBeforeComplete', {
       props: {
         treeKey,
         // treeState: JSON.stringify(treeState),

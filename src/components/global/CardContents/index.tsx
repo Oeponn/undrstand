@@ -70,7 +70,8 @@ const Option = ({
     backgroundStyle = {backgroundColor: `rgba(91, 96, 98, 1)`};
   }
 
-  if (!option) {
+  if (Object.keys(options).length === 0) {
+    console.log('keys are null:', options);
     return null;
   }
 
@@ -111,6 +112,10 @@ const CardContents = (
       swiped: boolean,
     },
 ) => {
+  if (!card) {
+    console.log('null');
+    return null;
+  }
   const {
     title,
     description,

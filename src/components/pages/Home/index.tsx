@@ -115,10 +115,10 @@ const Home = () => {
     };
 
     const handleBeforeUnload = (_event?: BeforeUnloadEvent) => {
-      // if (event) {
-      //   console.log('Before unload!');
-      //   event.preventDefault();
-      // }
+      if (_event) {
+        // console.log('Before unload!');
+        _event.preventDefault();
+      }
       beforeUnmount();
       const currentTree = cardTreeRef.current;
       const currentResultsMode = resultsModeRef.current;
@@ -144,7 +144,8 @@ const Home = () => {
       // console.log('currentTop:', currentTop);
       // console.log('currentStack[currentTop].key,:', currentStack[currentTop].key);
       // console.log('currentSwipes:', currentSwipes);
-      // console.log('answers:', answers);
+      // console.log('currentResultsMode:', currentResultsMode);
+      // console.log('currentReachedEnd:', currentReachedEnd);
 
       // Track if fresh state or loaded from storage but an action was taken
       if (!fromStorage ||
@@ -230,7 +231,9 @@ const Home = () => {
       setReStack(true);
       setResultsMode(true);
     }
-    if (resultsMode && Object.keys(gone).length === stack.length) {
+    if (resultsMode &&
+      Object.keys(gone).length === stack.length &&
+      stack.length > 0) {
       // Come back to an existing state where all cards swiped but exited page
       // Without waiting for them to return first
       setReStack(true);
@@ -333,16 +336,18 @@ const Home = () => {
     } else {
       setArrowkeyPresses((prevCount) => prevCount + 1);
     }
+
+    const forFun = !!cardTree.cards[key].answer;
     // console.log('tracking answer');
     trackAnswer({
       treeKey: cardTree.title,
       cardKey: key,
       direction,
-      answer: cardTree.cards[key].options[direction] || '',
+      answer: forFun ? '' : cardTree.cards[key].options[direction] || '',
       method: method === 0 ? 'swipe' : 'keyPress',
       resultsMode,
       // It is a swipe for fun
-      forFun: !!cardTree.cards[key].answer,
+      forFun,
     });
 
 

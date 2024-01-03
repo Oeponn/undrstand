@@ -15,7 +15,7 @@ $hoverColor: rgb(91, 96, 98);
 }
 
 .card {
-  border: 2px solid rgb(255, 255, 255);
+  border: 2px solid rgb(255, 255, 255, 0.8);
   background-color: black;
   width: 45vh;
   max-width: 225px;
@@ -23,7 +23,7 @@ $hoverColor: rgb(91, 96, 98);
   max-height: 425px;
   will-change: transform;
 
-  background: rgb(25,25,25);
+  // background: rgb(25,25,25);
   background: rgb(32,37,46);
   background: -moz-radial-gradient(circle, rgba(32,37,46,1) 0%, rgba(32,36,42,1) 18%, rgba(24,26,31,1) 46%, rgba(24,27,33,1) 81%);
   background: -webkit-radial-gradient(circle, rgba(32,37,46,1) 0%, rgba(32,36,42,1) 18%, rgba(24,26,31,1) 46%, rgba(24,27,33,1) 81%);
