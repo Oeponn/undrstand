@@ -3,7 +3,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import Typewriter from 'typewriter-effect';
 import {useTheme} from 'components/contexts/ThemeContext';
-import {CardType, Direction, OptionType} from 'types/deck';
+import {Card, Direction, OptionType} from 'types/deck';
 import styles from './styles.module.scss';
 
 const SWIPE_THRESHOLD = 150; // Set a threshold for swipe movement
@@ -102,7 +102,7 @@ const Option = ({
 const CardContents = (
     {card, index, isDown, isTop, numCards, position, resultsMode, swiped}:
     {
-      card: CardType,
+      card: Card,
       index: number,
       isDown: boolean,
       isTop: boolean,
@@ -112,6 +112,7 @@ const CardContents = (
       swiped: boolean,
     },
 ) => {
+  // console.log('cc');
   if (!card) {
     console.log('null');
     return null;
@@ -185,9 +186,10 @@ const CardContents = (
               setCompleted({...completed, description: true});
             });
       } else {
+        const futureDesc = future[(numCards - index - 2) % future.length];
         refs.description.current
             // .typeString('Decide your previous fate first')
-            .typeString(future[index % 6])
+            .typeString(futureDesc)
             .start();
       }
     }
@@ -211,12 +213,27 @@ const CardContents = (
     }
   }, [completed]);
 
+  // If it is not top card, show preview text
+  // numcards is 1 indexed, index is 0 indexed, subtract 1
+  // Subtract 1 nmore because top card is never previewed
+  const previewDescription = isTop ?
+    description :
+    future[(numCards - index - 2) % future.length];
+
+  // if (isTop) {
+  //   console.log('pressed || resultsMode || !showTyping', pressed || resultsMode || !showTyping);
+  //   console.log('pressed: ', pressed);
+  //   console.log('resultsMode: ', resultsMode);
+  //   console.log('showTyping: ', showTyping);
+  // }
+
+
   return (
     <div className={styles.contentsContainer}>
       <p className={styles.title}>{title}</p>
       <div className={styles.descriptionContainer}>
         {pressed || resultsMode || !showTyping ?
-        <div className={styles.description}>{description}</div> :
+        <div className={styles.description}>{previewDescription}</div> :
         <Typewriter
           options={{
             ...typewriterOptions,

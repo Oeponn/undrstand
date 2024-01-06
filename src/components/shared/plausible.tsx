@@ -78,4 +78,23 @@ export const trackExit = ({
   }
 };
 
+export const trackComplete = ({
+  treeKey, answers, swipes, keyPresses,
+}: {
+  treeKey: string,
+  // treeState: CardTree, // Too big to send, 2000 byte value limit, 300 for key
+  answers: AnswerKeyType,
+  swipes: number,
+  keyPresses: number,
+}) => {
+  plausible.trackEvent('quizComplete', {
+    props: {
+      treeKey,
+      answers: JSON.stringify(answers),
+      swipes,
+      keyPresses,
+    },
+  });
+};
+
 export default plausible;

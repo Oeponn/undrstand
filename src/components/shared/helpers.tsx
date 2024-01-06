@@ -3,7 +3,10 @@ export function isTouchDevice() {
   return (('ontouchstart' in window) ||
      (navigator.maxTouchPoints > 0));
 }
-
+export function pad(num: number, size: number = 9) {
+  const padded = '00000000000000000' + num;
+  return padded.substring(padded.length - size);
+}
 // export function difference(
 //     setA: Set<number | string>, setB: Set<number | string>,
 // ) {

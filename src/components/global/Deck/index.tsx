@@ -3,15 +3,17 @@ import React, {useEffect, useRef, useState} from 'react';
 import {useSprings, animated, to as interpolate} from '@react-spring/web';
 import {useDrag} from 'react-use-gesture';
 import CardContents from 'components/global/CardContents';
-import {AnswerKeyType, CardType, CardTree, Direction} from 'types/deck';
+import {AnswerKeyType, Card, CardTree, Direction} from 'types/deck';
 import {
   getDirection,
   getXYFromDirection,
   keyPressDirection,
   keyPressCardPosition,
 } from 'components/shared/helpers';
+// import ResultsCard from 'components/global/ResultsCard';
 import styles from './styles.module.scss';
 
+const directions: Direction[] = ['up', 'down', 'left', 'right'];
 // const TAP_THRESHOLD = 150;
 const SWIPE_THRESHOLD = 150; // Set a threshold for swipe movement
 
@@ -28,6 +30,7 @@ const stacked = (i: number) => ({
   rot: -10 + Math.random() * 20,
   delay: i * 100,
   opacity: 1,
+  // zIndex: -i,
 });
 
 const from = (_i: number) => ({x: 0, rot: 0, scale: 1.5, y: -1000, opacity: 1});
@@ -37,6 +40,7 @@ const trans = (r: number, s: number) =>
   `perspective(2500px) rotateX(30deg) rotateY(${r / 10}deg) ` +
   `rotateZ(${r}deg) scale(${s})`;
 
+// const ResultsCardMemoized = React.memo(ResultsCard);
 
 function Deck({
   cardTree,
@@ -55,7 +59,7 @@ function Deck({
 }:{
   // treeKey: string,
   cardTree: CardTree,
-  stack: CardType[],
+  stack: Card[],
   reStack: boolean,
   resultsMode: boolean,
   topCardIndex: number,
@@ -69,7 +73,7 @@ function Deck({
   updateCardVisibility: (key: string, visible: boolean) => void
 }) {
   const numCards = stack.length;
-  const stackRef = useRef<CardType[]>(stack);
+  const stackRef = useRef<Card[]>(stack);
   const topCardIndexRef = useRef<number>(topCardIndex);
   const resultsModeRef = useRef<boolean>(resultsMode);
   const goneRef = useRef<AnswerKeyType>(gone);
@@ -78,6 +82,7 @@ function Deck({
       direction: Direction,
       method: number
   ) => void>(updateGone);
+  // const resultCardRef = useRef<HTMLDivElement>(null);
   const [isDown, setIsDown] = useState(-1);
   const [props, api] = useSprings(numCards, () => ({}));
   const stackCards = () => {
@@ -126,9 +131,9 @@ function Deck({
 
       // if (!resultsMode) {
       if (horizontal) {
-        updateCardPosition(index, x, 0);
+        // updateCardPosition(index, x, 0);
       } else {
-        updateCardPosition(index, 0, y);
+        // updateCardPosition(index, 0, y);
       }
       // }
 
@@ -224,21 +229,39 @@ function Deck({
   }, [stack.length]);
 
   const bind = useDrag(({
-    args: [index], down, movement: [mx, my], direction: [xDir, yDir], velocity, event,
+    args: [index], down: pressed, movement: [mx, my], direction: [xDir, yDir], velocity, event,
   }) => {
-    if (Object.keys(stack[index].options).length == 2) {
-      my = 0;
-    }
     // If the card being clicked is not the top card, ignore
     if (index != topCardIndex) {
       return;
     }
+
+    const availableDirections = stack[index].options;
+    const notAvailableDirections = directions.filter((dir) => {
+      return availableDirections[dir] === undefined;
+    });
+    notAvailableDirections.forEach((dir) => {
+      // If the direction is not available, prevent going in that direction
+      if (dir === 'up' && my < 0) {
+        my = 0;
+      }
+      if (dir === 'down' && my > 0) {
+        my = 0;
+      }
+      if (dir === 'left' && mx < 0) {
+        mx = 0;
+      }
+      if (dir === 'right' && mx > 0) {
+        mx = 0;
+      }
+    });
+
     const horizontal = Math.abs(mx) > Math.abs(my);
 
     if (horizontal) {
-      updateCardPosition(index, mx, 0);
+      // updateCardPosition(index, mx, 0);
     } else {
-      updateCardPosition(index, 0, my);
+      // updateCardPosition(index, 0, my);
     }
 
     xDir = xDir < 0 ? -1 : 1; // Direction should either be left or right
@@ -258,7 +281,7 @@ function Deck({
       swiped = velocity >= 0.2 && Math.sign(my) == Math.sign(yDir);
       dropped = velocity < 0.2 && Math.abs(my) > SWIPE_THRESHOLD;
     }
-    if (down) {
+    if (pressed) {
       setIsDown(index);
       // When the drag starts, record the start time
       if (event) {
@@ -291,18 +314,18 @@ function Deck({
       // Go offscreen on same side card is on, not swipe direction
       const xDirection = Math.sign(mx);
       const yDirection = Math.sign(my);
-      const x = isGone ? (200 + window.innerWidth) * xDirection : down ? mx : 0;
-      const y = isGone ? (200 + window.innerHeight) * yDirection : down ? my : 0;
+      const x = isGone ? ((200 + window.innerWidth) * xDirection) : (pressed ? mx : 0);
+      const y = isGone ? ((200 + window.innerHeight) * yDirection) : (pressed ? my : 0);
       // How much the card tilts, flicking it harder makes it rotate faster
       const rot = Math.max(mx, my) / 100 + (isGone ? xDir * 10 * velocity : 0);
-      const scale = down ? 1.1 : 1; // Active cards lift up a bit
+      const scale = pressed ? 1.1 : 1; // Active cards lift up a bit
       return {
         x: horizontal ? x : 0,
         y: horizontal ? 0 : y,
         rot,
         scale,
         delay: undefined,
-        config: {friction: 50, tension: down ? (800) : (isGone ? 200 : 500)},
+        config: {friction: 50, tension: pressed ? (800) : (isGone ? 200 : 500)},
       };
     });
   });
@@ -318,12 +341,41 @@ function Deck({
         const card = cardTree.cards[key];
         const visible = card ? card.visible : true;
 
+
         // console.log('cardTree:', cardTree);
         // console.log('key:', key);
         // console.log('stack[i]:', stack[i]);
         // console.log('cardTree.cards[key]:', cardTree.cards[key]);
+
+        // const DisplayCard = () => {
+        //   if (cardTree.cards[key].type === 'results') {
+        //     const outcome = cardTree.cards[key].result || 'INFJ';
+        //     return <ResultsCardMemoized outcome={outcome} resultCardRef={resultCardRef} />;
+        //   } else {
+        //     return <CardContents
+        //       card={card}
+        //       index={i}
+        //       isDown={isDown === i}
+        //       isTop={topCardIndex === i}
+        //       numCards={numCards}
+        //       position={position}
+        //       resultsMode={resultsMode}
+        //       swiped={Object.keys(gone).includes(key)}
+        //     />;
+        //   }
+        // };
+
+        // const tempStyle = {
+        //   transform: interpolate([rot, scale], trans),
+        //   opacity: visible ? opacity : 0,
+        //   // border: cardTree.cards[cards[i].key].visible ? '5px solid blue' : '5px solid red',
+        // };
+
+        // const outerStyle = {x, y, zIndex: i};
+
         return (
-          <animated.div className={styles.deck} key={key} style={{x, y}}>
+          <animated.div className={styles.deck} key={key} style={{x, y, zIndex: i}}>
+            {/* <animated.div className={styles.deck} key={key} style={outerStyle}> */}
             <animated.div
               {...bind(i)}
               style={{
@@ -331,10 +383,12 @@ function Deck({
                 opacity: visible ? opacity : 0,
                 // border: cardTree.cards[cards[i].key].visible ? '5px solid blue' : '5px solid red',
               }}
+              // style={tempStyle}
               className={styles.card}
             >
+              {/* <DisplayCard /> */}
               <CardContents
-                card={cardTree.cards[key]}
+                card={card}
                 index={i}
                 isDown={isDown === i}
                 isTop={topCardIndex === i}

@@ -1,16 +1,17 @@
 /* eslint-disable max-len */
 import {
-  CardType,
+  Card,
   CardTree,
 } from 'types/deck';
 
-export const blankCard: CardType = {
+export const blankCard: Card = {
   key: 'blank',
   title: '',
   description: '',
   question: 'You can still swipe around for fun...',
   visible: true,
   answer: '',
+  type: 'question',
   position: {x: 0, y: 0},
   options: {
     up: 'Up',
@@ -32,13 +33,14 @@ export const blankCard: CardType = {
   },
 };
 
-export const endCard: CardType = {
+export const endCard: Card = {
   key: 'finished',
   title: 'Journey Completed',
   description: 'There are no more paths for you to take.',
   question: 'But you can still swipe around for fun...',
   visible: true,
   answer: '',
+  type: 'question',
   position: {x: 0, y: 0},
   options: {
     up: 'Up',
@@ -61,6 +63,7 @@ export const endCard: CardType = {
 };
 
 export const tempCards: CardTree = {
+  key: 'default',
   title: 'Default',
   maxLength: 8,
   cards: {
@@ -71,6 +74,7 @@ export const tempCards: CardTree = {
       question: 'Will you reach out to me? (swiping to open links coming soon)',
       visible: true,
       answer: '',
+      type: 'question',
       options: {
         up: 'LinkedIn: https://www.linkedin.com/in/tiger-shi/',
         right: 'Email: tigershi0110@gmail.com',
@@ -97,6 +101,7 @@ export const tempCards: CardTree = {
       question: 'Which attention time to monetary value exchange rate is highest?',
       visible: true,
       answer: '',
+      type: 'question',
       options: {
         up: 'Wordle: a few minutes per day. Sold for 1 million',
         right: 'Linktree: short but frequent uses due to utility. Valued at 1.3 billion',
@@ -123,6 +128,7 @@ export const tempCards: CardTree = {
       question: '',
       visible: true,
       answer: '',
+      type: 'question',
       options: {
         // up: 'A more conventional page with dropdowns and such would probably be better...',
         right: 'You will hear from me shortly',
@@ -149,6 +155,7 @@ export const tempCards: CardTree = {
       question: 'Thoughts?',
       visible: true,
       answer: '',
+      type: 'question',
       options: {
         up: 'That\'s neat',
         right: 'How does the typewriter effect work?',
@@ -175,6 +182,7 @@ export const tempCards: CardTree = {
       question: 'Go any direction to continue',
       visible: true,
       answer: '',
+      type: 'question',
       options: {
         up: 'Continue',
         right: 'Continue',
@@ -201,6 +209,7 @@ export const tempCards: CardTree = {
       question: '',
       visible: true,
       answer: '',
+      type: 'question',
       options: {
         // up: 'Hmmm',
         right: 'Continue',
@@ -227,6 +236,7 @@ export const tempCards: CardTree = {
       question: 'Your journey has ended.',
       visible: true,
       answer: '',
+      type: 'question',
       options: {
         // up: 'Hmmm',
         right: 'End',
@@ -253,6 +263,7 @@ export const tempCards: CardTree = {
       question: 'Happy?',
       visible: true,
       answer: '',
+      type: 'question',
       options: {
         up: 'Hmmm',
         right: 'Yes',
@@ -279,6 +290,7 @@ export const tempCards: CardTree = {
       question: 'Which kid is your favorite?',
       visible: true,
       answer: '',
+      type: 'question',
       options: {
         up: 'Raphael',
         right: 'Leonardo',
@@ -305,6 +317,7 @@ export const tempCards: CardTree = {
       question: 'Enter this village?',
       visible: true,
       answer: '',
+      type: 'question',
       options: {
         // up: 'End',
         right: 'Yes',
@@ -331,6 +344,7 @@ export const tempCards: CardTree = {
       question: 'What do you have to say for yourself?',
       visible: true,
       answer: '',
+      type: 'question',
       options: {
         // up: 'End',
         right: 'You literally could\'ve written it so I didn\'t die.',
@@ -357,6 +371,7 @@ export const tempCards: CardTree = {
       question: 'There\'s a stick next to you. What do you do?',
       visible: true,
       answer: '',
+      type: 'question',
       options: {
         up: 'Make a wide berth around it',
         right: 'Try to pet it',
@@ -383,6 +398,7 @@ export const tempCards: CardTree = {
       question: 'What do you do?',
       visible: true,
       answer: '',
+      type: 'question',
       options: {
         right: 'Flip the tortoise back onto its feet',
         left: 'Keep walking',
@@ -405,6 +421,7 @@ export const tempCards: CardTree = {
       question: 'What do you do?',
       visible: true,
       answer: '',
+      type: 'question',
       options: {
         right: 'Flip the tortoise back onto its feet',
         left: 'Keep walking',
@@ -427,6 +444,7 @@ export const tempCards: CardTree = {
       question: 'What would you like to do?',
       visible: true,
       answer: '',
+      type: 'question',
       options: {
         right: 'Get closer, maybe you can calm it down',
         left: 'Go back to the tortoise',
@@ -449,6 +467,7 @@ export const tempCards: CardTree = {
       question: 'Which do you walk towards?',
       visible: true,
       answer: '',
+      type: 'question',
       options: {
         right: 'Walk towards the hare',
         left: 'Walk towards the tortoise',
@@ -464,18 +483,47 @@ export const tempCards: CardTree = {
         down: {},
       },
     },
-    start: {
-      key: 'start',
-      title: 'The Beginning',
-      description: 'Swipe left or right to make your decision, or you can use arrow keys on your keyboard.',
-      question: 'Try swiping left or right',
+    detour: {
+      key: 'detour',
+      title: 'Detour',
+      description: 'Bit of a rebel ay? That\'s fine. I\'ve written a card to handle it, but just know you ARE adding more work for me.',
+      question: 'LEFT or RIGHT?',
       visible: true,
       answer: '',
+      type: 'question',
       options: {
+        // up: 'Up',
         right: 'Right',
         left: 'Left',
       },
       next: {
+        // up: 'fork',
+        right: 'fork',
+        left: 'fork',
+      },
+      scores: {
+        up: {},
+        right: {},
+        left: {},
+        down: {},
+      },
+    },
+    start: {
+      key: 'start',
+      title: 'The Beginning',
+      description: 'Swipe left or right to make your decision, or you can use arrow keys on your keyboard if you are on desktop.',
+      question: 'Try swiping left or right',
+      visible: true,
+      answer: '',
+      type: 'question',
+      options: {
+        up: 'Up',
+        right: 'Right',
+        left: 'Left',
+        // down: 'Down',
+      },
+      next: {
+        up: 'detour',
         right: 'fork',
         left: 'fork',
       },

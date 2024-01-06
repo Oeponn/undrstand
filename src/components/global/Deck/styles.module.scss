@@ -15,34 +15,34 @@ $hoverColor: rgb(91, 96, 98);
 }
 
 .card {
-  border: 2px solid rgb(255, 255, 255, 0.8);
-  background-color: black;
   width: 45vh;
   max-width: 225px;
   height: 85vh;
   max-height: 425px;
   will-change: transform;
 
-  // background: rgb(25,25,25);
-  background: rgb(32,37,46);
-  background: -moz-radial-gradient(circle, rgba(32,37,46,1) 0%, rgba(32,36,42,1) 18%, rgba(24,26,31,1) 46%, rgba(24,27,33,1) 81%);
-  background: -webkit-radial-gradient(circle, rgba(32,37,46,1) 0%, rgba(32,36,42,1) 18%, rgba(24,26,31,1) 46%, rgba(24,27,33,1) 81%);
-  background: radial-gradient(circle, rgba(32,37,46,1) 0%, rgba(32,36,42,1) 18%, rgba(24,26,31,1) 46%, rgba(24,27,33,1) 81%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#20252e",endColorstr="#181b21",GradientType=1);
+  // border-radius: 10px;
+  // border: 2px solid rgb(255, 255, 255, 0.8);
+  // background: rgb(32,37,46);
+  // background: -moz-radial-gradient(circle, rgba(32,37,46,1) 0%, rgba(32,36,42,1) 18%, rgba(24,26,31,1) 46%, rgba(24,27,33,1) 81%);
+  // background: -webkit-radial-gradient(circle, rgba(32,37,46,1) 0%, rgba(32,36,42,1) 18%, rgba(24,26,31,1) 46%, rgba(24,27,33,1) 81%);
+  // background: radial-gradient(circle, rgba(32,37,46,1) 0%, rgba(32,36,42,1) 18%, rgba(24,26,31,1) 46%, rgba(24,27,33,1) 81%);
+  // filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#20252e",endColorstr="#181b21",GradientType=1);
+  // box-shadow:
+  //   0 12.5px 75px -10px rgba(50, 50, 73, 0.4),
+  //   0 10px 10px -10px rgba(50, 50, 73, 0.3);
+  // display: flex;
+  // flex-direction: column;
+  // align-items: center;
+  // justify-content: flex-start;
 
-  padding: 20px 10px;
-  border-radius: 10px;
-  box-shadow:
-    0 12.5px 75px -10px rgba(50, 50, 73, 0.4),
-    0 10px 10px -10px rgba(50, 50, 73, 0.3);
+  // position: relative;
+  // opacity: 0;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-
-  position: relative;
   opacity: 0;
+
+  background: none;
+
 }
 
 @media screen and (min-width: 480px) {

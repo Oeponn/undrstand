@@ -14,6 +14,7 @@
     "@types/react-router-dom": "^5.3.3",
     "bootstrap": "^4.6.0",
     "eslint-config-google": "^0.14.0",
+    "html2canvas": "^1.4.1",
     "plausible-tracker": "^0.3.8",
     "react": "^18.2.0",
     "react-bootstrap": "^1.5.2",

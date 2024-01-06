@@ -18,11 +18,30 @@ $typeWriterMargin: 9px;
 .contentsContainer {
   height: 100%;
   width: 100%;
+  padding: 20px 10px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  opacity: 85%;
+
+  border-radius: 10px;
+  border: 2px solid rgb(255, 255, 255, 0.8);
+  background: rgb(32,37,46);
+  background: -moz-radial-gradient(circle, rgba(32,37,46,1) 0%, rgba(32,36,42,1) 18%, rgba(24,26,31,1) 46%, rgba(24,27,33,1) 81%);
+  background: -webkit-radial-gradient(circle, rgba(32,37,46,1) 0%, rgba(32,36,42,1) 18%, rgba(24,26,31,1) 46%, rgba(24,27,33,1) 81%);
+  background: radial-gradient(circle, rgba(32,37,46,1) 0%, rgba(32,36,42,1) 18%, rgba(24,26,31,1) 46%, rgba(24,27,33,1) 81%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#20252e",endColorstr="#181b21",GradientType=1);
+  box-shadow:
+    0 12.5px 75px -10px rgba(50, 50, 73, 0.4),
+    0 10px 10px -10px rgba(50, 50, 73, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  position: relative;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .title {

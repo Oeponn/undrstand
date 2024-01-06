@@ -3,25 +3,26 @@ import {useEffect, useRef, useState} from 'react';
 import Deck from 'components/global/Deck';
 import {
   AnswerKeyType,
-  CardType,
+  Card,
   CardTree,
   Direction,
 } from 'types/deck';
 import {blankCard, tempCards} from 'components/shared/cardTemplates';
 import {useTheme} from 'components/contexts/ThemeContext';
-import {trackAnswer, trackExit} from 'components/shared/plausible';
+import {trackAnswer, trackComplete, trackExit} from 'components/shared/plausible';
 import styles from './styles.module.scss';
 
 const Home = () => {
   // Master state
   const [cardTree, setCardTree] = useState<CardTree>({
+    key: '',
     title: '',
     maxLength: 0,
     cards: {},
   });
 
   // States derived from master state for display
-  const [stack, setStack] = useState<CardType[]>([]);
+  const [stack, setStack] = useState<Card[]>([]);
   const [gone, setGone] = useState<AnswerKeyType>({});
 
   // States to aid in animation management
@@ -39,7 +40,7 @@ const Home = () => {
 
   // Refs for event listener handlers
   const cardTreeRef = useRef<CardTree>(cardTree);
-  const stackRef = useRef<CardType[]>(stack);
+  const stackRef = useRef<Card[]>(stack);
   const resultsModeRef = useRef<boolean>(resultsMode);
   const reachedEndRef = useRef<boolean>(reachedEnd);
   const swipesRef = useRef<number>(swipes);
@@ -53,18 +54,18 @@ const Home = () => {
   //   console.log('gone', gone);
   // }, [gone]);
 
+  // useEffect(() => {
+  //   console.log('cardTree', cardTree);
+  // }, [cardTree]);
+
   useEffect(() => {
     // TODO fetch card tree from database, then set in state here
     const storageState = localStorage.getItem('undrstandDeckState');
     const parsedState = JSON.parse(storageState || '{}');
-    // console.log('parsedState', parsedState[tempCards.title]);
-    // eslint-disable-next-line no-constant-condition
-    // if (false) {
-    if (storeState && Object.keys(parsedState).includes(tempCards.title)) {
-      // console.log('existing state found:', tempCards.title, 'in', parsedState[tempCards.title]);
+    if (storeState && Object.keys(parsedState).includes(tempCards.key)) {
       setLoadedFromStorage(true);
-      setResultsMode(parsedState[tempCards.title].resultsMode);
-      setCardTree(parsedState[tempCards.title].cardTree);
+      setResultsMode(parsedState[tempCards.key].resultsMode);
+      setCardTree(parsedState[tempCards.key].cardTree);
     } else {
       // initialize start card to be top card
       const cardToUpdate = tempCards.cards['start'];
@@ -107,7 +108,7 @@ const Home = () => {
       const parsedState = JSON.parse(storageState || '{}');
       localStorage.setItem('undrstandDeckState', JSON.stringify({
         ...parsedState,
-        [currentTree.title]: {
+        [currentTree.key]: {
           cardTree: currentTree,
           resultsMode: resultsModeRef.current || false,
         },
@@ -136,22 +137,16 @@ const Home = () => {
           answers[card.key] = card.answer;
         }
       });
-      if (currentTree.title === '' || currentStack.length === 0) {
+      if (currentTree.key === '' || currentStack.length === 0) {
         // console.log('currentStack or currentTree is empty!');
         return;
       }
-      // console.log('tracking page exit');
-      // console.log('currentTop:', currentTop);
-      // console.log('currentStack[currentTop].key,:', currentStack[currentTop].key);
-      // console.log('currentSwipes:', currentSwipes);
-      // console.log('currentResultsMode:', currentResultsMode);
-      // console.log('currentReachedEnd:', currentReachedEnd);
 
       // Track if fresh state or loaded from storage but an action was taken
       if (!fromStorage ||
         (fromStorage && currentSwipes + currentArrowkeyPresses > 0)) {
         trackExit({
-          treeKey: currentTree.title,
+          treeKey: currentTree.key,
           // treeState: currentTree,
           topCard: currentStack[currentTop].key,
           answers: answers,
@@ -177,9 +172,9 @@ const Home = () => {
       return;
     }
     const newGone: AnswerKeyType = {};
-    let newStack: CardType[] = [...stack];
+    let newStack: Card[] = [...stack];
     // If no cards, construct with blank cards
-    if (newStack.length !== cardTree.maxLength && cardTree.title) {
+    if (newStack.length !== cardTree.maxLength && cardTree.key) {
       // If no cards, construct with blank cards
       newStack = Array.from({length: cardTree.maxLength}, (value, index) => {
         return {
@@ -228,6 +223,15 @@ const Home = () => {
       setReStack(false);
     }
     if (Object.keys(gone).length === stack.length && reachedEnd) {
+      if (!resultsMode) {
+        console.log('tracking complete');
+        trackComplete({
+          treeKey: cardTree.key,
+          answers: gone,
+          swipes: 0,
+          keyPresses: 0,
+        });
+      }
       setReStack(true);
       setResultsMode(true);
     }
@@ -320,7 +324,7 @@ const Home = () => {
       cards: Object.entries(cardTree.cards).reduce((newCards, [key, card]) => {
         newCards[key] = {...card, isGone: false};
         return newCards;
-      }, {} as {[key: string]: CardType}),
+      }, {} as {[key: string]: Card}),
     };
     setCardTree(newCardTree);
     setGone({});
@@ -508,20 +512,35 @@ const Home = () => {
 
 
       const currentTopCardKey = stack[newTopCardIndex].key;
-      newCardTree.cards[`ADDED${stack.length + 1}`] = {
+      // newCardTree.cards[`ADDED${stack.length + 1}`] = {
+      //   ...blankCard,
+      //   title: `ADDED${stack.length + 1}`,
+      //   description: 'ADDED THIS CARD',
+      //   key: `ADDED${stack.length + 1}`,
+      //   index: newTopCardIndex + 1,
+      //   next: {
+      //     up: currentTopCardKey,
+      //     right: currentTopCardKey,
+      //     left: currentTopCardKey,
+      //     down: currentTopCardKey,
+      //   },
+      //   // If it is the top card, make it invisible until initialization or it
+      //   // will flicker before the react spring style is initialized
+      //   visible: false,
+      // };
+      newCardTree.cards[`results${stack.length + 1}`] = {
         ...blankCard,
         title: `ADDED${stack.length + 1}`,
-        description: 'ADDED THIS CARD',
-        key: `ADDED${stack.length + 1}`,
+        type: 'results',
+        result: 'INFJ',
+        key: `results${stack.length + 1}`,
         index: newTopCardIndex + 1,
         next: {
-          up: currentTopCardKey,
-          right: currentTopCardKey,
-          left: currentTopCardKey,
-          down: currentTopCardKey,
+          up: currentTopCardKey || '_none',
+          right: currentTopCardKey || '_none',
+          left: currentTopCardKey || '_none',
+          down: currentTopCardKey || '_none',
         },
-        // If it is the top card, make it invisible until initialization or it
-        // will flicker before the react spring style is initialized
         visible: false,
       };
       console.log(`ADDED${stack.length + 1}`);

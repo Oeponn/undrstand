@@ -11,21 +11,10 @@ interface PageNotFoundParams {
 export default function PageNotFound() {
   const {name} = useParams<PageNotFoundParams>();
 
-  // useEffect(() => {
-  //   if (name) {
-  //     fetch(`/api/${name}`) // Update with your Flask server URL
-  //         .then((response) => response.text())
-  //         .then((data) => {
-  //           console.log('data:', data);
-  //         })
-  //         .catch((error) => console.error('Error fetching data: ', error));
-  //   }
-  // }, [name]);
-
   return (
-    <>
+    <div className={styles.container}>
       <p>I wasn't able to find the '{name}' page, sorry</p>
       <p><Link to='/' className={styles.link}> Go back home</Link></p>
-    </>
+    </div>
   );
 }
