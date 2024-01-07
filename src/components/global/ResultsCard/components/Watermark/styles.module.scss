@@ -1,0 +1,44 @@
+@import "css/_colors";
+@import "css/_dimensions";
+
+.watermark {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  white-space: nowrap;
+  padding: 2px 0 3px;
+  background-color: var(--secondaryColor);
+
+  .watermarkText {
+    font-size: 12px;
+    font-style: italic;
+    font-weight: 500;
+    // text-transform: uppercase;
+    // color: var(--baseColor);
+    color: var(--accentColor);
+    display: flex;
+    align-items: center;
+    // Start slightly offset to look more natural if animation doesn't load
+    transform: translate3d(-10%, 0, 0);
+    animation: animateWatermark 50s linear infinite;
+    // mix-blend-mode: multiply;
+
+    .logo {
+      height: 10px;
+      mix-blend-mode: difference;
+    }
+
+    span {
+      margin: 0 10px;
+    }
+  }
+}
+
+@keyframes animateWatermark {
+  from {
+    transform: translate3d(-10%, 0, 0);
+  }
+  to {
+    transform: translate3d(-110%, 0, 0);
+  }
+}

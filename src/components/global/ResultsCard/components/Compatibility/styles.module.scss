@@ -1,0 +1,48 @@
+@import "css/_colors";
+@import "css/_dimensions";
+
+.compatibility {
+  width: 100%;
+  padding: 5px;
+  gap: 5px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+
+  .label {
+    font-weight: bold;
+    font-size: 10px;
+    // word-spacing: 20px;
+    white-space: pre;
+  }
+
+  .compatible,
+  .incompatible {
+    width: 50%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+    background-color: $washedGrey;
+    border-radius: 10px;
+    padding: 10px;
+  }
+
+  .element {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .elementIcon {
+    max-width: 30px;
+    mix-blend-mode: darken;
+  }
+
+  .type {
+    margin: 0;
+    font-size: 7px;
+    white-space: nowrap;
+  }
+}

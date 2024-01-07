@@ -2,8 +2,9 @@ $arrowSize: 20px;
 $hoverColor: rgb(91, 96, 98);
 
 .deck {
+  composes: unselectable from "css/properties/unselectable.module.scss";
   position: absolute;
-  width: 325px;
+  width: 450px;
   color: white;
   height: 0;
   will-change: transform;
@@ -11,14 +12,18 @@ $hoverColor: rgb(91, 96, 98);
   align-items: center;
   justify-content: center;
   touch-action: none;
-  top: 47%
+  // top: 47%
+  height: 100%;
+  // border: 1px solid red;
+  box-sizing: border-box;
 }
 
 .card {
+  composes: unselectable from "css/properties/unselectable.module.scss";
   width: 45vh;
-  max-width: 225px;
+  max-width: 275px;
   height: 85vh;
-  max-height: 425px;
+  max-height: 500px;
   will-change: transform;
 
   // border-radius: 10px;
@@ -38,17 +43,14 @@ $hoverColor: rgb(91, 96, 98);
 
   // position: relative;
   // opacity: 0;
-
   opacity: 0;
-
   background: none;
-
 }
 
 @media screen and (min-width: 480px) {
   .card {
-    max-width: 300px;
-    max-height: 525px;
+    max-width: 450px;
+    max-height: 650px;
 
     display: flex;
     flex-direction: column;

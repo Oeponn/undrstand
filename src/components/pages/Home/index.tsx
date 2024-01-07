@@ -1,13 +1,15 @@
 /* eslint-disable max-len */
 import {useEffect, useRef, useState} from 'react';
-import Deck from 'components/global/Deck';
 import {
   AnswerKeyType,
   Card,
   CardTree,
   Direction,
+  mb,
 } from 'types/deck';
+import Deck from 'components/global/Deck';
 import {blankCard, tempCards} from 'components/shared/cardTemplates';
+import {personalities} from 'components/shared/personalityTemplates';
 import {useTheme} from 'components/contexts/ThemeContext';
 import {trackAnswer, trackComplete, trackExit} from 'components/shared/plausible';
 import styles from './styles.module.scss';
@@ -224,12 +226,14 @@ const Home = () => {
     }
     if (Object.keys(gone).length === stack.length && reachedEnd) {
       if (!resultsMode) {
-        console.log('tracking complete');
+        // setTimeout(() => {
+        //   addResultsCard('INTJ');
+        // }, 1500);
         trackComplete({
           treeKey: cardTree.key,
           answers: gone,
-          swipes: 0,
-          keyPresses: 0,
+          swipes: swipes,
+          keyPresses: arrowkeyPresses,
         });
       }
       setReStack(true);
@@ -238,6 +242,7 @@ const Home = () => {
     if (resultsMode &&
       Object.keys(gone).length === stack.length &&
       stack.length > 0) {
+      // console.log('resultsmode true gonna run');
       // Come back to an existing state where all cards swiped but exited page
       // Without waiting for them to return first
       setReStack(true);
@@ -488,8 +493,10 @@ const Home = () => {
   };
 
   // For testing purposes only
-  const addTestCard = () => {
-    const newTopCardIndex = stack.length - Object.keys(gone).length - 1;
+  const addResultsCard = (type: mb) => {
+    // const newTopCardIndex = stack.length - Object.keys(gone).length - 1;
+    // Always adds to the top?
+    const newTopCardIndex = stack.length - 1;
 
     setCardTree((prevCardTree) => {
       const newCardTree = {
@@ -497,43 +504,28 @@ const Home = () => {
         maxLength: prevCardTree.maxLength + 1,
       };
       // increase all cards with index greater than topCardIndex by 1
-      Object.keys(prevCardTree.cards).forEach((key) => {
-        const i = prevCardTree.cards[key].index;
-        if (i === undefined) {
-          return;
-        }
-        if (i > newTopCardIndex) {
-          newCardTree.cards[key] = {
-            ...prevCardTree.cards[key],
-            index: i + 1,
-          };
-        }
-      });
+      // Object.keys(prevCardTree.cards).forEach((key) => {
+      //   const i = prevCardTree.cards[key].index;
+      //   if (i === undefined) {
+      //     return;
+      //   }
+      //   if (i > newTopCardIndex) {
+      //     newCardTree.cards[key] = {
+      //       ...prevCardTree.cards[key],
+      //       index: i + 1,
+      //     };
+      //   }
+      // });
 
+      const element = personalities[type].element;
 
       const currentTopCardKey = stack[newTopCardIndex].key;
-      // newCardTree.cards[`ADDED${stack.length + 1}`] = {
-      //   ...blankCard,
-      //   title: `ADDED${stack.length + 1}`,
-      //   description: 'ADDED THIS CARD',
-      //   key: `ADDED${stack.length + 1}`,
-      //   index: newTopCardIndex + 1,
-      //   next: {
-      //     up: currentTopCardKey,
-      //     right: currentTopCardKey,
-      //     left: currentTopCardKey,
-      //     down: currentTopCardKey,
-      //   },
-      //   // If it is the top card, make it invisible until initialization or it
-      //   // will flicker before the react spring style is initialized
-      //   visible: false,
-      // };
-      newCardTree.cards[`results${stack.length + 1}`] = {
+      newCardTree.cards[`result-${element}-${stack.length + 1}`] = {
         ...blankCard,
         title: `ADDED${stack.length + 1}`,
         type: 'results',
-        result: 'INFJ',
-        key: `results${stack.length + 1}`,
+        result: type,
+        key: `result-${element}-${stack.length + 1}`,
         index: newTopCardIndex + 1,
         next: {
           up: currentTopCardKey || '_none',
@@ -569,7 +561,7 @@ const Home = () => {
       <div className={styles.temp}>{topCardIndex}</div>
       <div className={styles.testButtons}>
         <button onClick={() => setReStack(true)}>setCompleted</button>
-        <button onClick={() => addTestCard()}>Add Card</button>
+        <button onClick={() => addResultsCard('INTJ')}>Add Card</button>
         <button onClick={() => clearStorage()}>clear localstorage</button>
         <button onClick={printCards}>print cards</button>
         <button onClick={printStorage}>print storage</button>

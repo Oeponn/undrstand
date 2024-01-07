@@ -3,6 +3,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {useSprings, animated, to as interpolate} from '@react-spring/web';
 import {useDrag} from 'react-use-gesture';
 import CardContents from 'components/global/CardContents';
+// import {AnswerKeyType, Card, CardTree, CardType, Direction} from 'types/deck';
 import {AnswerKeyType, Card, CardTree, Direction} from 'types/deck';
 import {
   getDirection,
@@ -10,17 +11,29 @@ import {
   keyPressDirection,
   keyPressCardPosition,
 } from 'components/shared/helpers';
-// import ResultsCard from 'components/global/ResultsCard';
+import ResultsCard from 'components/global/ResultsCard';
 import styles from './styles.module.scss';
 
 const directions: Direction[] = ['up', 'down', 'left', 'right'];
-// const TAP_THRESHOLD = 150;
+// const TAP_THRESHOLD = 200;
 const SWIPE_THRESHOLD = 150; // Set a threshold for swipe movement
 
-// const handleCardtap = (index: number) => {
-//   console.log(`Tapped ${cards[index].title}`);
+// const handleCardtap = (key: string, type: CardType) => {
+//   if (type === 'results') {
+//     console.log(`Tapped results! ${key}`);
+//   }
 // };
 
+// const fullScreen = () => ({
+//   x: 0,
+//   y: 0,
+//   scale: 1,
+//   rot: 0,
+//   delay: 0,
+//   opacity: 1,
+//   height: '100%',
+//   width: '100%',
+// });
 // These two are helpers, they curate spring data, values that are
 // later being interpolated into css
 const stacked = (i: number) => ({
@@ -28,6 +41,7 @@ const stacked = (i: number) => ({
   y: i * -4,
   scale: 1,
   rot: -10 + Math.random() * 20,
+  perspective: 2500,
   delay: i * 100,
   opacity: 1,
   // zIndex: -i,
@@ -36,11 +50,69 @@ const stacked = (i: number) => ({
 const from = (_i: number) => ({x: 0, rot: 0, scale: 1.5, y: -1000, opacity: 1});
 // This is being used in the view, it interpolates rotation and
 // scale into a css transform
-const trans = (r: number, s: number) =>
-  `perspective(2500px) rotateX(30deg) rotateY(${r / 10}deg) ` +
-  `rotateZ(${r}deg) scale(${s})`;
+// const trans = (r: number, s: number) =>
+//   `perspective(2500px) rotateX(30deg) rotateY(${r / 10}deg) ` +
+//   `rotateZ(${r}deg) scale(${s})`;
+// const trans = (r: number, s: number) =>
+//   `perspective(0px) rotateX(30deg) rotateY(${r / 10}deg) ` +
+//   `rotateZ(${r}deg) scale(${s})`;
 
-// const ResultsCardMemoized = React.memo(ResultsCard);
+const trans = (r: number, s: number, p: number | string) => {
+  if (!p) {
+    return `perspective(2500px) rotateX(30deg) rotateY(${r / 10}deg) ` +
+  `rotateZ(${r}deg) scale(${s})`;
+  }
+  if (p === 'none') {
+    return `perspective(2500px) rotateX(30deg) rotateY(${r / 10}deg) ` +
+  `rotateZ(${r}deg) scale(${s})`;
+  }
+  return `perspective(${p ? p + 'px' : 'none'}) rotateX(30deg) rotateY(${r / 10}deg) ` +
+  `rotateZ(${r}deg) scale(${s})`;
+};
+const DisplayCard = ({
+  card,
+  cardTree,
+  i,
+  isDown,
+  numCards,
+  position,
+  resultsMode,
+  topCardIndex,
+  resultCardRef,
+  gone,
+}:{
+  card: Card,
+  cardTree: CardTree,
+  i: number,
+  isDown: number,
+  numCards: number,
+  position?: {x: number, y: number},
+  resultsMode: boolean,
+  topCardIndex: number,
+  resultCardRef: React.RefObject<HTMLDivElement>,
+  gone: AnswerKeyType,
+}) => {
+  if (!card) {
+    return null;
+  }
+  const key = card.key;
+
+  if (cardTree.cards[key].type === 'results') {
+    const outcome = cardTree.cards[key].result || 'INFJ';
+    return <ResultsCard outcome={outcome} resultCardRef={resultCardRef} />;
+  } else {
+    return <CardContents
+      card={card}
+      index={i}
+      isDown={isDown === i}
+      isTop={topCardIndex === i}
+      numCards={numCards}
+      position={position}
+      resultsMode={resultsMode}
+      swiped={Object.keys(gone).includes(key)}
+    />;
+  }
+};
 
 function Deck({
   cardTree,
@@ -82,7 +154,7 @@ function Deck({
       direction: Direction,
       method: number
   ) => void>(updateGone);
-  // const resultCardRef = useRef<HTMLDivElement>(null);
+  const resultCardRef = useRef<HTMLDivElement>(null);
   const [isDown, setIsDown] = useState(-1);
   const [props, api] = useSprings(numCards, () => ({}));
   const stackCards = () => {
@@ -236,6 +308,8 @@ function Deck({
       return;
     }
 
+    // const tappity = false;
+
     const availableDirections = stack[index].options;
     const notAvailableDirections = directions.filter((dir) => {
       return availableDirections[dir] === undefined;
@@ -259,9 +333,9 @@ function Deck({
     const horizontal = Math.abs(mx) > Math.abs(my);
 
     if (horizontal) {
-      // updateCardPosition(index, mx, 0);
+      updateCardPosition(index, mx, 0);
     } else {
-      // updateCardPosition(index, 0, my);
+      updateCardPosition(index, 0, my);
     }
 
     xDir = xDir < 0 ? -1 : 1; // Direction should either be left or right
@@ -282,6 +356,7 @@ function Deck({
       dropped = velocity < 0.2 && Math.abs(my) > SWIPE_THRESHOLD;
     }
     if (pressed) {
+      // console.log('pressed');
       setIsDown(index);
       // When the drag starts, record the start time
       if (event) {
@@ -298,8 +373,25 @@ function Deck({
         const direction = getDirection(mx, my);
         gone[stack[topCardIndex].key] = direction;
         updateGone(stack[topCardIndex].key, direction, 0);
-      // } else if (duration < TAP_THRESHOLD) {
-      //   handleCardtap(index);
+      // } else if (stack[index].type === 'results' && duration < TAP_THRESHOLD) {
+      //   tappity = true;
+        // handleCardtap(stack[index].key, stack[index].type);
+        // api.start((i: number) => {
+        //   if (index !== i) return;
+        //   console.log('running api on tap: ', stack[i].key);
+        //   return {
+        //     x: 1000,
+        //     y: 0,
+        //     rot: 0,
+        //     scale: 1,
+        //     delay: undefined,
+        //     config: {friction: 50, tension: 500},
+        //   };
+        //   return {
+        //     ...from(i),
+        //     x: 1000,
+        //   };
+        // });
       // } else if (!resultsMode) {
       } else {
         // setMxPositions state back to 0 so opacity returns to 0
@@ -318,12 +410,43 @@ function Deck({
       const y = isGone ? ((200 + window.innerHeight) * yDirection) : (pressed ? my : 0);
       // How much the card tilts, flicking it harder makes it rotate faster
       const rot = Math.max(mx, my) / 100 + (isGone ? xDir * 10 * velocity : 0);
-      const scale = pressed ? 1.1 : 1; // Active cards lift up a bit
+      // const scale = pressed ? 1.1 : 1; // Active cards lift up a bit
+      // eslint-disable-next-line prefer-const
+      let scale = pressed ? 1.1 : 1; // Active cards lift up a bit
+
+      // console.log('wuh:', stack[i].type);
+      // if (stack[i].type === 'results') {
+      //   console.log('multiplying scale for results:', scale);
+      //   scale = pressed ? 1.5 : 1;
+      //   console.log('after:', scale);
+      // }
+      // const perspective = pressed ? 'none' : 2500; // Active cards lift up a bit
+      // console.log('pressed:', pressed, stack[i].key, 'scale:', scale);
+      // if results card:
+      // if (tappity) {
+      //   console.log('tappity');
+      //   return {
+      //     from: {height: '100%', width: '400px', maxHeight: '600px'},
+      //     x: 0,
+      //     y: 0,
+      //     rot: 0,
+      //     // scale: 1.5,
+      //     scale: 1,
+      //     delay: 0,
+      //     // height: '100%',
+      //     // width: '800px',
+      //     // maxHeight: '100%',
+      //     // maxWidth: 'revert',
+      //     // position: 'absolute',
+      //     config: {friction: 50, tension: 500},
+      //   };
+
       return {
         x: horizontal ? x : 0,
         y: horizontal ? 0 : y,
         rot,
         scale,
+        // perspective: 'none',
         delay: undefined,
         config: {friction: 50, tension: pressed ? (800) : (isGone ? 200 : 500)},
       };
@@ -332,7 +455,19 @@ function Deck({
 
   return (
     <>
-      {props.map(({x, y, rot, scale, opacity}, i) => {
+      {props.map(({
+        x,
+        y,
+        rot,
+        scale,
+        opacity,
+        // perspective,
+        // position: temp,
+        // width,
+        // height,
+        // maxHeight,
+        // ...styles
+      }, i) => {
         const {
           position,
           key,
@@ -341,61 +476,52 @@ function Deck({
         const card = cardTree.cards[key];
         const visible = card ? card.visible : true;
 
+        // console.log('currentScale:', scale.get());
+
+        // console.log('styles:', styles);
+
+        // const perspective = i === isDown? undefined : 2500;
+
 
         // console.log('cardTree:', cardTree);
         // console.log('key:', key);
         // console.log('stack[i]:', stack[i]);
         // console.log('cardTree.cards[key]:', cardTree.cards[key]);
 
-        // const DisplayCard = () => {
-        //   if (cardTree.cards[key].type === 'results') {
-        //     const outcome = cardTree.cards[key].result || 'INFJ';
-        //     return <ResultsCardMemoized outcome={outcome} resultCardRef={resultCardRef} />;
-        //   } else {
-        //     return <CardContents
-        //       card={card}
-        //       index={i}
-        //       isDown={isDown === i}
-        //       isTop={topCardIndex === i}
-        //       numCards={numCards}
-        //       position={position}
-        //       resultsMode={resultsMode}
-        //       swiped={Object.keys(gone).includes(key)}
-        //     />;
-        //   }
-        // };
-
-        // const tempStyle = {
-        //   transform: interpolate([rot, scale], trans),
-        //   opacity: visible ? opacity : 0,
-        //   // border: cardTree.cards[cards[i].key].visible ? '5px solid blue' : '5px solid red',
-        // };
-
-        // const outerStyle = {x, y, zIndex: i};
-
         return (
           <animated.div className={styles.deck} key={key} style={{x, y, zIndex: i}}>
-            {/* <animated.div className={styles.deck} key={key} style={outerStyle}> */}
             <animated.div
               {...bind(i)}
               style={{
                 transform: interpolate([rot, scale], trans),
+                // transform: interpolate([rot, scale, isDown? undefined : 1000], trans),
                 opacity: visible ? opacity : 0,
+                // position: 'absolute',
+                // height: height,
+                // width: width,
+                // maxHeight: maxHeight,
+                // position: temp,
                 // border: cardTree.cards[cards[i].key].visible ? '5px solid blue' : '5px solid red',
               }}
-              // style={tempStyle}
               className={styles.card}
             >
-              {/* <DisplayCard /> */}
-              <CardContents
+              {/* <div style={{background: 'black', zIndex: 1000}}>
+                {key}: down {isDown.toString()}, perspective: {perspective}
+              </div> */}
+              {/* <div style={{background: 'black', zIndex: 1000, position: 'absolute', top: -50}}>
+                trans: {JSON.stringify(interpolate([rot, scale], trans))}
+              </div> */}
+              <DisplayCard
                 card={card}
-                index={i}
-                isDown={isDown === i}
-                isTop={topCardIndex === i}
+                cardTree={cardTree}
+                i={i}
+                isDown={isDown}
                 numCards={numCards}
                 position={position}
                 resultsMode={resultsMode}
-                swiped={Object.keys(gone).includes(key)}
+                topCardIndex={topCardIndex}
+                resultCardRef={resultCardRef}
+                gone={gone}
               />
             </animated.div>
           </animated.div>

@@ -93,6 +93,7 @@ export const trackComplete = ({
       answers: JSON.stringify(answers),
       swipes,
       keyPresses,
+      actions: swipes + keyPresses,
     },
   });
 };

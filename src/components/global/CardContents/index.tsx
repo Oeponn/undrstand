@@ -104,7 +104,7 @@ const CardContents = (
     {
       card: Card,
       index: number,
-      isDown: boolean,
+      isDown?: boolean,
       isTop: boolean,
       numCards: number,
       position?: {x: number, y: number},
