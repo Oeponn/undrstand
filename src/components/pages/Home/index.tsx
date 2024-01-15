@@ -2,13 +2,14 @@
 import {useEffect, useRef, useState} from 'react';
 import {
   AnswerKeyType,
+  Attribute,
   Card,
   CardTree,
   Direction,
   mb,
-} from 'types/deck';
+} from '~/types/testTypes';
 import Deck from 'components/global/Deck';
-import {blankCard, tempCards} from 'components/shared/cardTemplates';
+import {blankCard, tempCards, baseScores} from 'components/shared/cardTemplates';
 import {personalities} from 'components/shared/personalityTemplates';
 import {useTheme} from 'components/contexts/ThemeContext';
 import {trackAnswer, trackComplete, trackExit} from 'components/shared/plausible';
@@ -226,9 +227,35 @@ const Home = () => {
     }
     if (Object.keys(gone).length === stack.length && reachedEnd) {
       if (!resultsMode) {
-        // setTimeout(() => {
-        //   addResultsCard('INTJ');
-        // }, 1500);
+        // calculate personality
+        const resultScore = {...baseScores};
+        Object.keys(gone).forEach((key) => {
+          const answer = gone[key];
+          const card = tempCards.cards[key];
+          const scores = card.scores[answer];
+          // Add the score in the card to the base score
+          // console.log('resultScore:', resultScore);
+          // console.log('scores:', scores);
+
+          for (const scoreAttr in scores) {
+            if (Object.prototype.hasOwnProperty.call(scores, scoreAttr)) {
+              const attribute: Attribute = scoreAttr as Attribute;
+              // console.log('scoreAttr:', attribute);
+              // console.log('scores[scoreAttr]:', scores[attribute]);
+              resultScore[attribute] += scores[attribute] ?? 0;
+            }
+          }
+        });
+        // console.log('resultScore:', resultScore);
+        let personality = '';
+        personality += resultScore.E > resultScore.I ? 'E' : 'I';
+        personality += resultScore.S > resultScore.N ? 'S' : 'N';
+        personality += resultScore.T > resultScore.F ? 'T' : 'F';
+        personality += resultScore.J > resultScore.P ? 'J' : 'P';
+        console.log('personality:', personality);
+        setTimeout(() => {
+          addResultsCard(personality as mb);
+        }, 1500);
         trackComplete({
           treeKey: cardTree.key,
           answers: gone,
@@ -518,6 +545,7 @@ const Home = () => {
       // });
 
       const element = personalities[type].element;
+      console.log('element of', type, 'is', element);
 
       const currentTopCardKey = stack[newTopCardIndex].key;
       newCardTree.cards[`result-${element}-${stack.length + 1}`] = {
@@ -535,7 +563,7 @@ const Home = () => {
         },
         visible: false,
       };
-      console.log(`ADDED${stack.length + 1}`);
+      // console.log(`ADDED${stack.length + 1}`);
       return newCardTree;
     });
   };
@@ -557,15 +585,16 @@ const Home = () => {
   };
 
   return (
-    <div className={styles.pageContainer}>
+    <div className={styles.homeContainer}>
       <div className={styles.temp}>{topCardIndex}</div>
       <div className={styles.testButtons}>
-        <button onClick={() => setReStack(true)}>setCompleted</button>
-        <button onClick={() => addResultsCard('INTJ')}>Add Card</button>
+        {/* <button onClick={() => setReStack(true)}>setCompleted</button> */}
+        {/* <button onClick={() => addResultsCard('INTJ')}>Add Card</button> */}
+        <button onClick={() => addResultsCard('INFJ')}>Add Card</button>
         <button onClick={() => clearStorage()}>clear localstorage</button>
         <button onClick={printCards}>print cards</button>
         <button onClick={printStorage}>print storage</button>
-        <div>swipes: {swipes} keypress: {arrowkeyPresses}</div>
+        {/* <div>swipes: {swipes} keypress: {arrowkeyPresses}</div> */}
       </div>
       <Deck
         cardTree={cardTree}

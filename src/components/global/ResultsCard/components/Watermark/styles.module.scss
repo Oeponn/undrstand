@@ -10,7 +10,7 @@
   background-color: var(--secondaryColor);
 
   .watermarkText {
-    font-size: 12px;
+    font-size: 10px;
     font-style: italic;
     font-weight: 500;
     // text-transform: uppercase;
@@ -26,6 +26,7 @@
     .logo {
       height: 10px;
       mix-blend-mode: difference;
+      pointer-events: none;
     }
 
     span {
@@ -40,5 +41,13 @@
   }
   to {
     transform: translate3d(-110%, 0, 0);
+  }
+}
+
+@media screen and (min-width: $mobileBreakpoint) {
+  .watermark {
+    .watermarkText {
+      font-size: 12px;
+    }
   }
 }

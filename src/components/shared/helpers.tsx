@@ -1,4 +1,4 @@
-import {Direction} from 'types/deck';
+import {Direction} from '~/types/testTypes';
 export function isTouchDevice() {
   return (('ontouchstart' in window) ||
      (navigator.maxTouchPoints > 0));

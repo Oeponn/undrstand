@@ -6,241 +6,359 @@
   // display: flex;
   box-sizing: border-box;
   background-color: var(--thirdColor);
+}
 
-  .elementSection,
-  .theorySection {
-    position: relative;
+.elementSection,
+.theorySection {
+  position: relative;
+  display: flex;
+
+}
+.titleContainer {
+  width: calc($titleContainerWidth / 2);
+  position: relative;
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+.innateContainer {
+  width: 75%;
+  display: flex;
+  justify-content: center;
+  background-color: var(--baseColor);
+  position: relative;
+  z-index: 1;
+
+  .titleContainer {
+    background: -moz-linear-gradient(270deg, var(--thirdColor) -20%, $transparent 100%);
+    background: -webkit-linear-gradient(270deg, var(--thirdColor) -20%, $transparent 100%);
+    background: linear-gradient(270deg, var(--thirdColor) -20%, $transparent 100%);
+  }
+
+  .oval1,
+  .oval2,
+  .oval3 {
+    position: absolute;
+    // width: 50%;
+    width: calc(2 * $titleContainerWidth);
+    height: 100%;
+    border: 3px solid var(--thirdColor);
+    border-radius: 50%;
+    box-sizing: border-box;
+    z-index: -1;
+    // opacity: 0.5;
+  }
+
+  .oval1 {
+    left: 0;
+  }
+  .oval3 {
+    right: 0;
+  }
+}
+
+@mixin stroke($color: $strokeColor, $size: 1px) {
+  text-shadow:
+    -#{$size} -#{$size} 0 $color,
+    0 -#{$size} 0 $color,
+    #{$size} -#{$size} 0 $color,
+    #{$size} 0 0 $color,
+    #{$size} #{$size} 0 $color,
+    0 #{$size} 0 $color,
+    -#{$size} #{$size} 0 $color,
+    -#{$size} 0 0 $color;
+}
+
+.innateTitle,
+.conceptTitle {
+  font-size: 12px;
+  // font-size: 8px;
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
+  z-index: 100;
+  // transform: translateX(calc(-50% + $titleContainerWidth / 2)) rotate(-90deg);
+  transform: translateX(calc(-50% + $titleContainerWidth / 4)) rotate(-90deg);
+}
+
+// .conceptTitle {
+//   background-color: var(--thirdColor);
+// }
+
+.innateTags,
+.concepts {
+  padding: 10px 0;
+  box-sizing: border-box;
+  font-size: 10px;
+}
+
+.concepts {
+  padding: 10px;
+}
+
+.conceptTags {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+
+  .tag {
+    box-sizing: border-box;
+    border: 2px solid var(--secondaryColor);
+  }
+}
+
+.elementSection {
+  // background-color: rgb(255, 255, 255, 0.2);
+
+  .innateTags {
+    width: 100%;
+    // width: calc(75% - $titleContainerWidth);
     display: flex;
+    flex-direction: column;
+    // gap: 10px;
+    gap: 5px;
+    padding: 10px;
+  }
+  .tag {
+    background-color: $washedGrey;
+    box-sizing: border-box;
+    border: 2px solid var(--secondaryColor);
+    text-align: center;
+    border-radius: 100px;
+    padding: 5px 8px;
+    font-size: 8px;
+  }
+}
 
-    .titleContainer {
-      width: $titleContainerWidth;
-      position: relative;
-      display: flex;
-      align-items: center;
-      text-align: center;
+.theorySection {
+  .oval1,
+  .oval2,
+  .oval3 {
+    position: absolute;
+    height: 33%;
+    background: var(--thirdColor);
+    background: -moz-linear-gradient(180deg, var(--thirdColor) -20%, var(--baseColor) 100%);
+    background: -webkit-linear-gradient(180deg, var(--thirdColor) -20%, var(--baseColor) 100%);
+    background: linear-gradient(180deg, var(--thirdColor) -20%, var(--baseColor) 100%);
+    border-radius: $titleContainerWidth 0 0 $titleContainerWidth;
+    width: 100%;
+  }
+
+  .oval1 {
+    top: 0;
+  }
+  .oval3 {
+    bottom: 0;
+  }
+
+  .tag {
+    background-color: $washedGrey;
+    text-align: center;
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-size: 8px;
+  }
+
+  .section {
+    background-color: $washedGrey;
+
+    box-sizing: border-box;
+    border: 2px solid var(--secondaryColor);
+    border-radius: 15px;
+    // padding: 10px 8px;
+    padding: 5px 8px;
+    // margin-bottom: 10px;
+    margin-bottom: 5px;
+    font-size: 8px;
+  }
+
+  .concept {
+    font-weight: bold;
+  }
+
+  .conceptDesc {
+    font-weight: normal;
+  }
+}
+
+.iconContainer {
+  pointer-events: none;
+  position: relative;
+  // margin-left: auto;
+  // padding: 20px 10px;
+  padding: 10px;
+  // background-color: rgba(0, 0, 0, 0.2);
+  // width: 40%;
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: $washedGrey;
+
+  background-size: 50px 50px;
+
+  .ovalContainer {
+    position: absolute;
+    z-index: 0;
+    height: 100%;
+    width: 100%;
+  }
+
+  .oval1,
+  .oval2,
+  .oval3,
+  .oval4,
+  .oval5,
+  .oval6 {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    border-radius: 25% 70%;
+    box-sizing: border-box;
+    border: 3px solid white;
+    top: 0;
+    right: 0;
+  }
+
+  .oval6 {
+    height: 25%;
+    width: 25%;
+  }
+  .oval5 {
+    height: 40%;
+    width: 40%;
+  }
+  .oval4 {
+    height: 55%;
+    width: 55%;
+    border-width: 3px;
+  }
+  .oval3 {
+    height: 70%;
+    width: 70%;
+  }
+  .oval2 {
+    height: 85%;
+    width: 85%;
+  }
+}
+.elementIcon {
+  pointer-events: none;
+  width: 100%;
+  max-height: 150px;
+  max-width: 150px;
+  z-index: 100;
+}
+
+
+
+
+.compatibility {
+  width: 100%;
+  gap: 5px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-top: auto;
+  z-index: 1;
+
+  .label {
+    font-weight: bold;
+    font-size: 6px;
+    // word-spacing: 20px;
+    // white-space: pre;
+  }
+
+  .compatible,
+  .incompatible {
+    // border: 2px red solid;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+    // background-color: $washedGrey;
+    border-radius: 10px;
+    // padding: 10px;
+  }
+
+  .elementsContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+
+    // .element
+    &>:first-child {
+      align-items: start;
+    }
+    &>:last-child {
+      align-items: end;
     }
   }
 
-  .innateContainer {
+  .element {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+
+    .smallIcon {
+      max-width: 20px;
+      mix-blend-mode: darken;
+    }
+  }
+
+
+  .type {
+    margin: 0;
+    font-size: 6px;
+  }
+}
+
+@media screen and (min-width: $mobileBreakpoint) {
+  .iconContainer {
+    width: 40%;
+  }
+  .innateContainer { 
     width: 60%;
-    display: flex;
-    justify-content: center;
-    background-color: var(--baseColor);
+  }
+  .titleContainer {
+    width: $titleContainerWidth;
     position: relative;
-    z-index: 1;
-
-    .titleContainer {
-      background: -moz-linear-gradient(270deg, var(--thirdColor) -20%, $transparent 100%);
-      background: -webkit-linear-gradient(270deg, var(--thirdColor) -20%, $transparent 100%);
-      background: linear-gradient(270deg, var(--thirdColor) -20%, $transparent 100%);
-    }
-
-    .oval1, .oval2, .oval3 {
-      position: absolute;
-      // width: 50%;
-      width: calc(2 * $titleContainerWidth);
-      height: 100%;
-      border: 3px solid var(--thirdColor);
-      border-radius: 50%;
-      box-sizing: border-box;
-      z-index: -1;
-      // opacity: 0.5;
-    }
-
-    .oval1 {
-      left: 0;
-    }
-    .oval3 {
-      right: 0;
-    }
+    display: flex;
+    align-items: center;
+    text-align: center;
   }
-
-  @mixin stroke($color: $strokeColor, $size: 1px) {
-    text-shadow:
-      -#{$size} -#{$size} 0 $color,
-       0        -#{$size} 0 $color,
-       #{$size} -#{$size} 0 $color,
-       #{$size}  0        0 $color,
-       #{$size}  #{$size} 0 $color,
-       0         #{$size} 0 $color,
-      -#{$size}  #{$size} 0 $color,
-      -#{$size}  0        0 $color;
-  }
-  
 
   .innateTitle,
   .conceptTitle {
     font-size: 15px;
-    font-weight: bold;
-    text-align: center;
-    white-space: nowrap;
-    z-index: 100;
     transform: translateX(calc(-50% + $titleContainerWidth / 2)) rotate(-90deg);
   }
 
-  // .conceptTitle {
-  //   background-color: var(--thirdColor);
-  // }
-
-  .innateTags,
-  .concepts {
-    padding: 10px 0;
-    box-sizing: border-box;
-    font-size: 10px;
-  }
-
-  .concepts {
-    padding: 10px;
-  }
-
-  .conceptTags {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-
-    .tag {
-      box-sizing: border-box;
-      border: 2px solid var(--secondaryColor);
-    }
-  }
-
-  .elementSection {
-    // background-color: rgb(255, 255, 255, 0.2);
-
-    .innateTags {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 10px;
-    }
-    .tag {
-      background-color: $washedGrey;
-      box-sizing: border-box;
-      border: 2px solid var(--secondaryColor);
-      text-align: center;
-      border-radius: 100px;
-      padding: 5px 8px;
-      font-size: 8px;
-    }
+  .innateTags {
+    gap: 10px;
+    font-size: 9px;
   }
 
   .theorySection {
-    .oval1, .oval2, .oval3 {
-      position: absolute;
-      height: 33%;
-      background: var(--thirdColor);
-      background: -moz-linear-gradient(180deg, var(--thirdColor) -20%, var(--baseColor) 100%);
-      background: -webkit-linear-gradient(180deg, var(--thirdColor) -20%, var(--baseColor) 100%);
-      background: linear-gradient(180deg, var(--thirdColor) -20%, var(--baseColor) 100%);
-      border-radius: $titleContainerWidth 0 0 $titleContainerWidth;
-      width: 100%;
-    }
-
-    .oval1 {
-      top: 0;
-    }
-    .oval3 {
-      bottom: 0;
-    }
-
-    .tag {
-      background-color: $washedGrey;
-      text-align: center;
-      border-radius: 10px;
-      padding: 2px 8px;
-      font-size: 8px;
-    }
-
     .section {
-      background-color: $washedGrey;
-
-      box-sizing: border-box;
-      border: 2px solid var(--secondaryColor);
-      border-radius: 15px;
-      padding: 10px 8px;
       margin-bottom: 10px;
-      font-size: 8px;
-    }
-
-    .concept {
-      font-weight: bold;
-    }
-
-    .conceptDesc {
-      font-weight: normal;
+      padding: 10px 8px;
+      font-size: 9px;
     }
   }
 
-  .iconContainer {
-    position: relative;
-    margin-left: auto;
-    // padding: 20px 10px;
-    padding: 10px;
-    // background-color: rgba(0, 0, 0, 0.2);
-    width: 40%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: $washedGrey;
-    // background: 
-    //   // linear-gradient(135deg, #0000 18.75%, #5e412f 0 31.25%, #0000 0),
-    //   // repeating-linear-gradient(45deg, #5e412f -6.25% 6.25%, #fcebb6 0 18.75%);
-    //   linear-gradient(45deg, #0000 18.75%, var(--thirdColor) 0 31.25%, #0000 0),
-    //   repeating-linear-gradient(135deg, var(--thirdColor) -6.25% 6.25%, var(--baseColor) 0 18.75%);
-    background-size: 50px 50px;
-
-    .ovalContainer {
-      position: absolute;
-      z-index: 0;
-      height: 100%;
-      width: 100%;
-    }
-
-    .oval1,
-    .oval2,
-    .oval3,
-    .oval4,
-    .oval5,
-    .oval6 {
-      position: absolute;
-      height: 100%;
-      width: 100%;
-      border-radius: 25% 70%;
-      box-sizing: border-box;
-      border: 3px solid white;
-      top: 0;
-      right: 0;
-    }
-
-    .oval6 {
-      height: 25%;
-      width: 25%;
-    }
-    .oval5 {
-      height: 40%;
-      width: 40%;
-    }
-    .oval4 {
-      height: 55%;
-      width: 55%;
-      border-width: 3px;
-    }
-    .oval3 {
-      height: 70%;
-      width: 70%;
-    }
-    .oval2 {
-      height: 85%;
-      width: 85%;
-    }
+  .compatibility {
+    display: none;
   }
+
   .elementIcon {
-    // mix-blend-mode: darken;
     width: 70%;
-    max-height: 150px;
-    max-width: 150px;
-    z-index: 100;
-    position: absolute;
   }
 }
+

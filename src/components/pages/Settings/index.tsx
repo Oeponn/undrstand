@@ -59,7 +59,8 @@ const Settings = () => {
           </div>
           <div className={styles.hint}>
           If you turn this off you can go back to a fresh deck of cards.
-          If you come back later you can always start where you left off.
+          If you turn this on and come back later you can start where you left
+          off.
           </div>
         </div>
         <Checkbox

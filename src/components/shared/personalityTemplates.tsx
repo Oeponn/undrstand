@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import {PersonalityDict} from 'types/deck';
+import {PersonalityDict} from '~/types/testTypes';
 
 export const personalities: PersonalityDict = {
   ISTJ: {
@@ -85,13 +85,13 @@ export const personalities: PersonalityDict = {
   },
   INTJ: {
     element: 'Dark Matter',
-    elementDesc: 'Represents the unseen depths and forces of the universe, possess strategic and innovative thinking that can be difficult for others to decipher.',
+    elementDesc: 'Represents the unseen depths and forces of the universe, possess strategic and innovative thinking.',
     title: 'The Mastermind',
     titleDesc: 'Visionary and determined, they approach life with a clear plan and a focus on future possibilities.',
     risk: 'Intellectualization',
-    riskDesc: 'May use intellect and logic to detach from emotional experiences. May consider emotion an inhibitor to productivity.',
+    riskDesc: 'May use intellect and logic to detach from emotional experiences. May consider emotion an limiter.',
     concept: 'Sartre\'s Hell is Other People',
-    conceptDesc: 'Strives for self-overcoming and shaping their own values, is aware but fairly unbothered that it may result in an individualism that causes social isolation.',
+    conceptDesc: 'Strives for self-overcoming and shaping their own values, may be conflicted that it can result in an individualism that causes social isolation.',
     traits: ['Strategic', 'Analytical', 'Independent'],
     quotes: [
       'I hold grudges! But also remember favors',
@@ -174,7 +174,7 @@ export const personalities: PersonalityDict = {
     risk: 'Introjection',
     riskDesc: 'Likely to internalize emotions and ideals, both good and bad, deeply into psyche.',
     concept: 'Freud\'s Dream Analysis',
-    conceptDesc: 'Tends to delve deep into the symbolism of their dreams and unconscious, because literal experiences tend to imprint deeper than the average person.',
+    conceptDesc: 'Tends to delve deep into the symbolism of their dreams and unconscious.',
     traits: ['Empathetic', 'Idealistic', 'Introspective'],
     quotes: [
       'Why did I dream that my teeth fell out!?',
@@ -206,7 +206,7 @@ export const personalities: PersonalityDict = {
     quotes: [
       'I\'m a little bit of an oddball',
       'I love abstract things',
-      'Have you thought about it this way?',
+      'Have you thought about it in a different way?',
       'I want to talk about the universe!',
       'Don\'t sweat the small stuff!',
     ],
@@ -339,7 +339,7 @@ export const personalities: PersonalityDict = {
     risk: 'Reaction Formation',
     riskDesc: 'Could express the opposite of their true feelings or impulses to maintain control.',
     concept: 'Machiavelli\'s The Prince',
-    conceptDesc: 'Their leadership style can sometimes reflect Machiavellian strategies - effective, but pragmatic and tactical. May value community wellbeing over individual.',
+    conceptDesc: 'Their leadership style can reflect Machiavellian strategies - effective, pragmatic, and tactical.',
     traits: ['Leader', 'Organized', 'Practical'],
     quotes: [
       'I am the glue holding this group project together',

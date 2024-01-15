@@ -1,7 +1,51 @@
+import {personalities} from 'components/shared/personalityTemplates';
+import {mb} from '~/types/testTypes';
 import styles from './styles.module.scss';
+
+const MobileCompatibility = ({compatible, incompatible}:{
+  compatible: mb[],
+  incompatible: mb[],
+}) => {
+  const compat = compatible.map((c) => personalities[c].element);
+  const incompat = incompatible.map((i) => personalities[i].element);
+  return (
+    <div className={styles.compatibility}>
+      <div className={styles.compatible}>
+        <span className={styles.label}>Most Compatible</span>
+        <div className={styles.elementsContainer}>
+          {compat.map((ele) => {
+            const filePath = `/elementIcons/${ele.replaceAll(' ', '')}.png`;
+            return (
+              <div className={styles.element} key={ele}>
+                <img className={styles.smallIcon} src={filePath} />
+                <p className={styles.type}>{ele}</p>
+              </div>
+            );
+          })}
+        </div>
+        {/* </div> */}
+      </div>
+      <div className={styles.incompatible}>
+        <span className={styles.label}>Least Compatible</span>
+        <div className={styles.elementsContainer}>
+          {incompat.map((ele) => {
+            const filePath = `/elementIcons/${ele.replaceAll(' ', '')}.png`;
+            return (
+              <div className={styles.element} key={ele}>
+                <img className={styles.smallIcon} src={filePath} />
+                <p className={styles.type}>{ele}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Traits = (
     {
+      compatible, incompatible,
       element, elementDesc,
       title, titleDesc,
       risk, riskDesc,
@@ -10,6 +54,8 @@ const Traits = (
       traits,
     }:
   {
+    compatible: mb[],
+    incompatible: mb[],
     element: string,
     elementDesc: string,
     title: string,
@@ -50,6 +96,10 @@ const Traits = (
           </div>
           {/* <img className={styles.elementIcon}src='/logo192.png' /> */}
           <img className={styles.elementIcon}src={filePath} />
+          <MobileCompatibility
+            compatible={compatible}
+            incompatible={incompatible}
+          />
         </div>
       </div>
       <div className={styles.theorySection}>

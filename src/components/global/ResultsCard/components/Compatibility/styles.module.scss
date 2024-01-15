@@ -9,6 +9,7 @@
   display: flex;
   justify-content: space-between;
   margin-top: auto;
+  display: none;
 
   .label {
     font-weight: bold;
@@ -38,11 +39,18 @@
   .elementIcon {
     max-width: 30px;
     mix-blend-mode: darken;
+    pointer-events: none;
   }
 
   .type {
     margin: 0;
     font-size: 7px;
     white-space: nowrap;
+  }
+}
+
+@media screen and (min-width: $mobileBreakpoint) {
+  .compatibility {
+    display: flex;
   }
 }

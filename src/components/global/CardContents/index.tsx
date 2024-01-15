@@ -3,7 +3,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import Typewriter from 'typewriter-effect';
 import {useTheme} from 'components/contexts/ThemeContext';
-import {Card, Direction, OptionType} from 'types/deck';
+import {Card, Direction, OptionType} from '~/types/testTypes';
 import styles from './styles.module.scss';
 
 const SWIPE_THRESHOLD = 150; // Set a threshold for swipe movement
@@ -39,6 +39,7 @@ const typewriterOptions = {
 
 const Option = ({
   answer,
+  // score,
   currDir,
   dir,
   isTop,
@@ -50,6 +51,7 @@ const Option = ({
   showTyping,
 } : {
   answer: Direction | '',
+  score: { [key: string]: number },
   currDir: string,
   dir: keyof OptionType,
   isTop: boolean,
@@ -93,6 +95,7 @@ const Option = ({
         &#10148;
       </span>
       <div className={optionClasses}>
+        {/* {option}: {JSON.stringify(score)} */}
         {option}
       </div>
     </div>
@@ -221,10 +224,10 @@ const CardContents = (
     future[(numCards - index - 2) % future.length];
 
   // if (isTop) {
-  //   console.log('pressed || resultsMode || !showTyping', pressed || resultsMode || !showTyping);
-  //   console.log('pressed: ', pressed);
-  //   console.log('resultsMode: ', resultsMode);
-  //   console.log('showTyping: ', showTyping);
+  //   // console.log('pressed || resultsMode || !showTyping', pressed || resultsMode || !showTyping);
+  //   // console.log('pressed: ', pressed);
+  //   // console.log('resultsMode: ', resultsMode);
+  //   // console.log('showTyping: ', showTyping);
   // }
 
 
@@ -268,6 +271,7 @@ const CardContents = (
             return (
               <Option
                 answer={card.answer}
+                score={card.scores[key as keyof typeof card.scores]}
                 currDir={currDir}
                 dir={key as keyof OptionType}
                 isTop={isTop}

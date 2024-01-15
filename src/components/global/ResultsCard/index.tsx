@@ -2,7 +2,7 @@
 // import {useEffect, useRef, useState} from 'react';
 import {useEffect} from 'react';
 import {personalities} from 'components/shared/personalityTemplates';
-import {mb} from 'types/deck';
+import {mb} from '~/types/testTypes';
 import {
   Compatibility,
   Footer,
@@ -10,12 +10,14 @@ import {
   Traits,
   Watermark,
 } from 'components/global/ResultsCard/components';
+import {useTheme} from 'components/contexts/ThemeContext';
 // import html2canvas from 'html2canvas';
 import styles from './styles.module.scss';
 const ResultsCard = ({outcome, resultCardRef}:{
   outcome: mb,
   resultCardRef: React.RefObject<HTMLDivElement>,
   }) => {
+  const {theme} = useTheme();
   // console.log('what:', outcome);
 
   useEffect(() => {
@@ -61,8 +63,15 @@ const ResultsCard = ({outcome, resultCardRef}:{
     incompatible,
   } = personalities[outcome];
 
+
   return (
-    <div className={styles.resultCard}>
+    <div
+      className={styles.resultCard}
+    >
+      <div
+        className='overlay'
+        style={{backgroundColor: theme === 'dark' ? 'black' : 'white'}}
+      />
       <div className={styles.resultCardDownload} ref={resultCardRef}>
         <Header element={element} title={title}/>
         <Watermark />
@@ -77,6 +86,8 @@ const ResultsCard = ({outcome, resultCardRef}:{
           conceptDesc={conceptDesc}
           quotes={quotes}
           traits={traits}
+          compatible={compatible}
+          incompatible={incompatible}
         />
         <Compatibility
           compatible={compatible}

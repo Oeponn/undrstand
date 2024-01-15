@@ -1,5 +1,7 @@
 /* eslint-disable max-len */
+import {ReactComponent as OutboundIcon} from 'components/shared/icons/outbound.svg';
 import styles from './styles.module.scss';
+
 const About = () => {
   return (
     <div className={styles.container}>
@@ -11,7 +13,7 @@ const About = () => {
           rel="noreferrer"
           target="_blank">
             LinkedIn
-          <span style={{transform: 'scale(0.6)'}} className="material-symbols-outlined">outbound</span>
+          <OutboundIcon className={styles.outbound} />
         </a>
         <a
           className={styles.link}
@@ -19,7 +21,7 @@ const About = () => {
           rel="noreferrer"
           target="_blank">
             Personal
-          <span style={{transform: 'scale(0.6)'}} className="material-symbols-outlined">outbound</span>
+          <OutboundIcon className={styles.outbound} />
         </a>
         <a
           className={styles.link}
@@ -27,7 +29,7 @@ const About = () => {
           rel="noreferrer"
           target="_blank">
             Github
-          <span style={{transform: 'scale(0.6)'}} className="material-symbols-outlined">outbound</span>
+          <OutboundIcon className={styles.outbound} />
         </a>
       </div>
       <p>

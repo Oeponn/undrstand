@@ -2,7 +2,19 @@
 import {
   Card,
   CardTree,
-} from 'types/deck';
+  ScoreResultType,
+} from '~/types/testTypes';
+
+export const baseScores: ScoreResultType = {
+  E: 0,
+  I: 0,
+  N: 0,
+  S: 0,
+  F: 0,
+  T: 0,
+  J: 0,
+  P: 0,
+};
 
 export const blankCard: Card = {
   key: 'blank',
@@ -88,10 +100,10 @@ export const tempCards: CardTree = {
         down: '_none',
       },
       scores: {
-        up: {},
-        right: {},
-        left: {},
-        down: {},
+        up: {E: 1},
+        right: {I: 1},
+        left: {P: 1},
+        down: {J: 1},
       },
     },
     design: {
@@ -115,10 +127,10 @@ export const tempCards: CardTree = {
         down: 'farewell',
       },
       scores: {
-        up: {},
-        right: {},
-        left: {},
-        down: {},
+        up: {S: 1},
+        right: {N: 1},
+        left: {F: 1},
+        down: {T: 1},
       },
     },
     hired: {
@@ -143,8 +155,8 @@ export const tempCards: CardTree = {
       },
       scores: {
         up: {},
-        right: {},
-        left: {},
+        right: {E: 1},
+        left: {I: 1},
         down: {},
       },
     },
@@ -169,16 +181,16 @@ export const tempCards: CardTree = {
         down: 'design',
       },
       scores: {
-        up: {},
-        right: {},
-        left: {},
-        down: {},
+        up: {F: 1},
+        right: {N: 1},
+        left: {E: 1},
+        down: {S: 1},
       },
     },
     portfolio: {
       key: 'portfolio',
       title: 'Hello, World!',
-      description: 'Hope that was somewhat fun.If you\'re looking at this page as a part of my portfolio, you\'re probably wondering what this is meant to be.',
+      description: 'Hope that was somewhat fun. If you\'re looking at this page as a part of my portfolio, you\'re probably wondering what this is meant to be.',
       question: 'Go any direction to continue',
       visible: true,
       answer: '',
@@ -224,8 +236,8 @@ export const tempCards: CardTree = {
       },
       scores: {
         up: {},
-        right: {},
-        left: {},
+        right: {T: 1},
+        left: {F: 1},
         down: {},
       },
     },
@@ -251,8 +263,8 @@ export const tempCards: CardTree = {
       },
       scores: {
         up: {},
-        right: {},
-        left: {},
+        right: {F: 1},
+        left: {T: 1},
         down: {},
       },
     },
@@ -277,10 +289,10 @@ export const tempCards: CardTree = {
         down: 'portfolio',
       },
       scores: {
-        up: {},
-        right: {},
-        left: {},
-        down: {},
+        up: {T: 1},
+        right: {E: 1},
+        left: {I: 1},
+        down: {F: 1},
       },
     },
     settle: {
@@ -304,10 +316,10 @@ export const tempCards: CardTree = {
         down: 'portfolio',
       },
       scores: {
-        up: {},
-        right: {},
-        left: {},
-        down: {},
+        up: {F: 1},
+        right: {J: 1},
+        left: {P: 1},
+        down: {T: 1},
       },
     },
     village: {
@@ -332,8 +344,8 @@ export const tempCards: CardTree = {
       },
       scores: {
         up: {},
-        right: {},
-        left: {},
+        right: {F: 1},
+        left: {T: 1},
         down: {},
       },
     },
@@ -385,10 +397,10 @@ export const tempCards: CardTree = {
         down: 'lose',
       },
       scores: {
-        up: {},
-        right: {},
-        left: {},
-        down: {},
+        up: {J: 1},
+        right: {F: 1},
+        left: {T: 1},
+        down: {P: 1},
       },
     },
     tortoise2: {
@@ -409,8 +421,8 @@ export const tempCards: CardTree = {
       },
       scores: {
         up: {},
-        right: {},
-        left: {},
+        right: {F: 1},
+        left: {T: 1},
         down: {},
       },
     },
@@ -432,8 +444,8 @@ export const tempCards: CardTree = {
       },
       scores: {
         up: {},
-        right: {},
-        left: {},
+        right: {F: 1},
+        left: {T: 1},
         down: {},
       },
     },
@@ -455,8 +467,8 @@ export const tempCards: CardTree = {
       },
       scores: {
         up: {},
-        right: {},
-        left: {},
+        right: {E: 1},
+        left: {I: 1},
         down: {},
       },
     },
@@ -478,8 +490,8 @@ export const tempCards: CardTree = {
       },
       scores: {
         up: {},
-        right: {},
-        left: {},
+        right: {S: 1},
+        left: {N: 1},
         down: {},
       },
     },
@@ -503,8 +515,8 @@ export const tempCards: CardTree = {
       },
       scores: {
         up: {},
-        right: {},
-        left: {},
+        right: {P: 1},
+        left: {J: 1},
         down: {},
       },
     },
@@ -520,7 +532,6 @@ export const tempCards: CardTree = {
         up: 'Up',
         right: 'Right',
         left: 'Left',
-        // down: 'Down',
       },
       next: {
         up: 'detour',
@@ -528,9 +539,9 @@ export const tempCards: CardTree = {
         left: 'fork',
       },
       scores: {
-        up: {},
-        right: {},
-        left: {},
+        up: {J: 1},
+        right: {E: 1},
+        left: {I: 1},
         down: {},
       },
     },

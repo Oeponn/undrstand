@@ -1,7 +1,7 @@
 // import {useTheme} from 'components/contexts/ThemeContext';
 import {useEffect, useRef, useState} from 'react';
 import {personalities} from 'components/shared/personalityTemplates';
-import {PersonalityType, mb} from 'types/deck';
+import {PersonalityType, mb} from '~/types/testTypes';
 import ResultsCard from 'components/global/ResultsCard';
 import html2canvas from 'html2canvas';
 import styles from './styles.module.scss';
@@ -95,7 +95,10 @@ const Results = ({outcome}:{outcome?: mb}) => {
           className={styles.cycleButton}
           onClick={downloadImage}>Download Result Card</button>
       </div>
-      <ResultsCard outcome={outcome || key} resultCardRef={resultCardRef} />
+      <ResultsCard
+        outcome={outcome || key}
+        resultCardRef={resultCardRef}
+      />
     </div>
   );
 };

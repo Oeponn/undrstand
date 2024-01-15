@@ -1,5 +1,5 @@
 import plausibleTracker from 'plausible-tracker';
-import {AnswerKeyType, Direction} from 'types/deck';
+import {AnswerKeyType, Direction} from '~/types/testTypes';
 import {isTouchDevice} from 'components/shared/helpers';
 
 const plausible = plausibleTracker({

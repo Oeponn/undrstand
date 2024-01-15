@@ -25,6 +25,8 @@ export type mb =
   'ESTP' |
   'ESFP';
 
+export type traitKey = 'I' | 'E' | 'S' | 'N' | 'F' | 'T' | 'J' | 'P';
+
 export type Element = 'Earth' | 'Water' | 'Moon' | 'Dark Matter' | 'Iron' |
   'Wood' | 'Light' | 'Ether' | 'Fire' | 'Starlight' | 'Aurora' |
   'Plasma' | 'Steel' | 'Golden Sun' | 'Wind' | 'Lightning';
@@ -52,9 +54,10 @@ export type PersonalityType = {
   lightText: string;
 }
 
-type Attribute = 'e' | 'i'| 's'| 'n'| 'f'| 't'| 'p'| 'j';
+export type Attribute = 'E' | 'I'| 'S'| 'N'| 'F'| 'T'| 'P'| 'J';
 
 export type ScoreType = {[key in Attribute]?: number};
+export type ScoreResultType = {[key in Attribute]: number};
 
 export type Card = {
   key: string;
@@ -70,7 +73,7 @@ export type Card = {
   type: CardType;
   next: {[key in Direction]?: string};
   scores: {
-    [key in Direction]?: ScoreType
+    [key in Direction]: ScoreType
   };
   result?: mb;
 };
@@ -87,11 +90,6 @@ export type IndexType = {
 }
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
-
-// export type AnswerType = {
-//   answer: Direction;
-//   // dir: number;
-// };
 
 export type AnswerKeyType = {
   [key: string]: Direction;

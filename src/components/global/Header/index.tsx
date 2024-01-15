@@ -1,10 +1,15 @@
 /* eslint-disable max-len */
-import React, {useEffect, useRef} from 'react';
+import {CSSProperties, useEffect, useRef} from 'react';
 import {NavLink} from 'react-router-dom';
 import {useLocation} from 'react-router-dom';
+import {useTheme} from 'components/contexts/ThemeContext';
+import {ReactComponent as InfoIcon} from 'components/shared/icons/info.svg';
+import {ReactComponent as PlayingCardsIcon} from 'components/shared/icons/playing_cards.svg';
+import {ReactComponent as SettingsIcon} from 'components/shared/icons/settings.svg';
 import styles from './styles.module.scss';
 
 const Header = () => {
+  const {showHeader} = useTheme();
   const navContainerRef = useRef<(HTMLDivElement | null)>(null);
   const indicatorRef = useRef<(HTMLDivElement | null)>(null);
   const {pathname} = useLocation();
@@ -39,11 +44,17 @@ const Header = () => {
     updateActiveIndicator();
   }, [pathname]);
 
+  const hideHeader: CSSProperties = {
+    opacity: 0,
+    pointerEvents: 'none',
+  };
+
   return (
-    <div className={styles.container}>
+    <div className={styles.container} style={showHeader ? {} : hideHeader}>
       <div className={styles.navContainer} ref={navContainerRef}>
         <NavLink to="/about" exact={true} activeClassName={styles.activeLink} className={styles.navLink}>
-          <span className="material-symbols-outlined">info</span>
+          {/* <span className="material-symbols-outlined">info</span> */}
+          <InfoIcon className={styles.headerIcon} />
           <div>Info</div>
         </NavLink>
         {/* <NavLink to="/build" exact={true} activeClassName={styles.activeLink} className={styles.navLink}>
@@ -51,7 +62,8 @@ const Header = () => {
           <div>Build</div>
         </NavLink> */}
         <NavLink to="/" exact={true} activeClassName={styles.activeLink} className={styles.navLink}>
-          <span className="material-symbols-outlined">playing_cards</span>
+          {/* <span className="material-symbols-outlined">playing_cards</span> */}
+          <PlayingCardsIcon className={styles.headerIcon} />
           <div>Home</div>
         </NavLink>
         {/* <NavLink to="/admin" exact={true} activeClassName={styles.activeLink} className={styles.navLink}>
@@ -59,7 +71,8 @@ const Header = () => {
           <div>Admin</div>
         </NavLink> */}
         <NavLink to="/settings" exact={true} activeClassName={styles.activeLink} className={styles.navLink}>
-          <span className="material-symbols-outlined">settings</span>
+          {/* <span className="material-symbols-outlined">settings</span> */}
+          <SettingsIcon className={styles.headerIcon} />
           <div>Settings</div>
         </NavLink>
         <div className={styles.indicator} ref={indicatorRef}/>

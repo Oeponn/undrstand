@@ -1,3 +1,6 @@
+@import "css/_dimensions";
+@import "css/_colors";
+
 $arrowSize: 20px;
 $hoverColor: rgb(91, 96, 98);
 $typeWriterMargin: 9px;
@@ -39,9 +42,15 @@ $typeWriterMargin: 9px;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+  max-width: 275px;
+  // max-height: 450px;
+  max-height: 500px;
 
+  // height: 500px;
   position: relative;
   color: rgba(255, 255, 255, 0.8);
+
+  width: 45vh;
 }
 
 .title {
@@ -250,5 +259,12 @@ $typeWriterMargin: 9px;
     .optionText {
       font-size: 12px;
     }
+  }
+}
+
+@media screen and (min-width: $mobileBreakpoint) {
+  .contentsContainer {
+    max-width: 450px;
+    max-height: 650px;
   }
 }

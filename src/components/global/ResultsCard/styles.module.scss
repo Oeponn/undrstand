@@ -20,9 +20,24 @@
 // $washedGrey: rgba(245, 245, 245, 1);
 $strokeColor: var(--accentColor);
 
-.elementIcon {
-  composes: unselectable from "css/properties/unselectable.module.scss";
+.overlay {
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  position: absolute;
+  background-color: black;
+  mix-blend-mode: difference;
+  z-index: 1000;
+  pointer-events: none;
+
+  transition: background-color 1s ease;
 }
+
+// .elementIcon {
+//   composes: unselectable from "css/properties/unselectable.module.scss";
+//   pointer-events: none;
+// }
 
 .resultCard {
   composes: unselectable from "css/properties/unselectable.module.scss";
@@ -30,20 +45,28 @@ $strokeColor: var(--accentColor);
   background-color: var(--baseColor);
   width: 100%;
   max-height: 100%;
-  max-width: 400px;
   overflow: hidden;
-  border-radius: 10px;
   border: 2px solid var(--fourthColor);
-  // border: 5px solid var(--accentColor);
-  // border: 5px solid var(--secondaryColor);
-  box-sizing: border-box;
+  border-color: var(--fourthColor);
+
+  // Inherit border thickness and radius from animated div parent
+  border-radius: inherit;
+  border-width: inherit;
+  // rare content box use so that react-spring animation doesn't jump at the end
+  box-sizing: content-box;
+  // letter spacing is so that html2canvas can space out the words properly
   letter-spacing: 0.0001px;
   // letter-spacing: 1px;
   display: flex;
   flex-direction: column;
-  position: absolute;
-  z-index: 1;
+  // position: absolute;
+  z-index: 1000;
   // overflow-y: scroll;
+  position: absolute;
+  width: revert;
+  max-width: 275px;
+  // We don't want height: 100% because we want it to fit the card
+  // height: 100%;
 }
 
 .admin {
@@ -58,6 +81,8 @@ $strokeColor: var(--accentColor);
 
 @media screen and (min-width: $mobileBreakpoint) {
   .resultCard {
-    border-width: 5px;
+    width: 45vh;
+    // border-width: 5px;
+    max-width: 450px;
   }
 }

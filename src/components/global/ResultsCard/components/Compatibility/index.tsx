@@ -1,5 +1,5 @@
 import {personalities} from 'components/shared/personalityTemplates';
-import {mb} from 'types/deck';
+import {mb} from '~/types/testTypes';
 import styles from './styles.module.scss';
 
 const Compatibility = ({compatible, incompatible}:{

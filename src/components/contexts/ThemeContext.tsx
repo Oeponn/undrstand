@@ -10,6 +10,8 @@ interface ThemeContextType {
   toggleShowTyping: () => void;
   storeState: boolean;
   toggleStoreState: () => void;
+  showHeader: boolean;
+  toggleShowHeader: (show: boolean) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
@@ -19,6 +21,8 @@ const ThemeContext = createContext<ThemeContextType>({
   toggleShowTyping: () => {},
   storeState: true,
   toggleStoreState: () => {},
+  showHeader: true,
+  toggleShowHeader: () => {},
 });
 
 export const useTheme = () => useContext(ThemeContext);
@@ -38,6 +42,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> =
    const [theme, setTheme] = useState<Theme>(localTheme);
    const [showTyping, setShowTyping] = useState<boolean>(localTyping);
    const [storeState, setStoreState] = useState<boolean>(localStoreState);
+   const [showHeader, setShowHeader] = useState<boolean>(true);
 
    //  on load fetch from localstorage and set if present:
    useEffect(() => {
@@ -71,6 +76,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> =
      setStoreState((prevStoreState) => !prevStoreState);
    };
 
+   const toggleShowHeader = (show: boolean) => {
+     setShowHeader(show);
+   };
+
    return (
      <ThemeContext.Provider value={{
        theme,
@@ -79,6 +88,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> =
        toggleShowTyping,
        storeState,
        toggleStoreState,
+       showHeader,
+       toggleShowHeader,
      }}>
        {children}
      </ThemeContext.Provider>
