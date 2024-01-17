@@ -252,7 +252,7 @@ const Home = () => {
         personality += resultScore.S > resultScore.N ? 'S' : 'N';
         personality += resultScore.T > resultScore.F ? 'T' : 'F';
         personality += resultScore.J > resultScore.P ? 'J' : 'P';
-        console.log('personality:', personality);
+        // console.log('personality:', personality);
         setTimeout(() => {
           addResultsCard(personality as mb);
         }, 1500);
@@ -545,7 +545,7 @@ const Home = () => {
       // });
 
       const element = personalities[type].element;
-      console.log('element of', type, 'is', element);
+      // console.log('element of', type, 'is', element);
 
       const currentTopCardKey = stack[newTopCardIndex].key;
       newCardTree.cards[`result-${element}-${stack.length + 1}`] = {

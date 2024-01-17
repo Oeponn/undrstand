@@ -82,9 +82,9 @@
   transform: translateX(calc(-50% + $titleContainerWidth / 4)) rotate(-90deg);
 }
 
-// .conceptTitle {
-//   background-color: var(--thirdColor);
-// }
+.conceptTitle {
+  z-index: 1;
+}
 
 .innateTags,
 .concepts {
@@ -246,10 +246,13 @@
 }
 .elementIcon {
   pointer-events: none;
-  width: 100%;
+  // width: 100%;
   max-height: 150px;
   max-width: 150px;
-  z-index: 100;
+  z-index: 1;
+  position: absolute;
+  width: 70%;
+  top: 10px;
 }
 
 
@@ -359,6 +362,7 @@
 
   .elementIcon {
     width: 70%;
+    position: static;
   }
 }
 
