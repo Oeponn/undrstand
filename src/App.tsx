@@ -13,6 +13,7 @@ import {
   Build,
   Home,
   Settings,
+  Staging,
   Results,
   // PageNotFound,
 } from './components/pages';
@@ -74,6 +75,7 @@ const App = () => {
         <div className="pageContainer">
           <Switch>
             <Route path="/" component={Home} exact={true} />
+            <Route path="/staging" component={Staging} exact={true} />
             <Route path="/build" component={Build} exact={true} />
             <Route path="/about" component={About} exact={true} />
             <Route path="/settings" component={Settings} exact={true} />

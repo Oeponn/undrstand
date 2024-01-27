@@ -2,7 +2,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useSprings, animated, to as interpolate} from '@react-spring/web';
 import {useDrag} from 'react-use-gesture';
-import CardContents from 'components/global/CardContents';
+import CardContents from 'components/global/StagingCardContents';
 import {AnswerKeyType, Card, CardTree, Direction} from '~/types/testTypes';
 // import {AnswerKeyType, Card, CardTree, Direction} from 'types/deck';
 import {

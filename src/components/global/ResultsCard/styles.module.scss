@@ -67,6 +67,7 @@ $strokeColor: var(--accentColor);
   max-width: 275px;
   // We don't want height: 100% because we want it to fit the card
   // height: 100%;
+  pointer-events: all;
 }
 
 .admin {

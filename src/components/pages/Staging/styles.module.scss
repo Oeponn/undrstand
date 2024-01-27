@@ -1,0 +1,45 @@
+@import "css/_dimensions";
+@import "css/_colors";
+
+.homeContainer {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  // height: 100%;
+  height: calc(100% + $headerHeight-mobile);
+  min-height: 450px;
+  width: 100%;
+  box-sizing: border-box;
+  color: white;
+  z-index: 1;
+  // border: 5px solid blue;
+  // position: relative;
+}
+
+.testButtons {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.temp {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.testButtons, .temp {
+  z-index: 1000;
+  display: none;
+}
+
+@media screen and (min-width: $mobileBreakpoint) {
+  .pageContainer {
+    height: calc(100% + $headerHeight-desktop);
+  }
+}
