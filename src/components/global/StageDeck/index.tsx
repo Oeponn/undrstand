@@ -452,8 +452,8 @@ function Deck({
         scale,
         opacity,
         perspective,
-        borderRadius,
-        borderWidth,
+        // borderRadius,
+        // borderWidth,
       }, i) => {
         const {
           position,
@@ -475,9 +475,10 @@ function Deck({
               {...bind(i)}
               style={{
                 transform: interpolate([rot, rotX, scale, perspective], trans),
+                WebkitTransform: interpolate([rot, rotX, scale, perspective], trans),
                 opacity: visible ? opacity : 0,
-                borderRadius,
-                borderWidth,
+                // borderRadius,
+                // borderWidth,
               }}
               className={styles.card}
             >

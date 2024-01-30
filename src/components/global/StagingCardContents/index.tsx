@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-len */
 import React, {useEffect, useRef, useState} from 'react';
-import Typewriter from 'typewriter-effect';
+// import Typewriter from 'typewriter-effect';
 import {useTheme} from 'components/contexts/ThemeContext';
 import {Card, Direction, OptionType} from '~/types/testTypes';
 import styles from './styles.module.scss';
@@ -30,12 +30,12 @@ type RefsObject = {
   [key: string]: React.MutableRefObject<any>;
 }
 
-const typewriterOptions = {
-  autoStart: false,
-  delay: 10,
-  loop: false,
-  cursorClassName: styles.cursor,
-};
+// const typewriterOptions = {
+//   autoStart: false,
+//   delay: 10,
+//   loop: false,
+//   cursorClassName: styles.cursor,
+// };
 
 const Option = ({
   answer,
@@ -142,7 +142,7 @@ const CardContents = (
     description: false,
     question: false,
   });
-  const [init, setInit] = useState(false);
+  // const [init, setInit] = useState(false);
   const [pressed, setPressed] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const {showTyping} = useTheme();
@@ -178,7 +178,8 @@ const CardContents = (
   }, [swiped]);
 
   useEffect(() => {
-    if (init && refs.description && refs.description.current) {
+    if (refs.description && refs.description.current) {
+    // if (init && refs.description && refs.description.current) {
       if (isTop && !isDown && !pressed) {
         refs.description.current
             .pauseFor(500)
@@ -196,7 +197,7 @@ const CardContents = (
             .start();
       }
     }
-  }, [isTop, isDown, init]);
+  }, [isTop, isDown]);
 
   useEffect(() => {
     if (completed.description && !completed.question && refs.question) {
@@ -235,7 +236,8 @@ const CardContents = (
     <div className={styles.contentsContainer}>
       <p className={styles.title}>{title}</p>
       <div className={styles.descriptionContainer}>
-        {pressed || resultsMode || !showTyping ?
+        <div className={styles.description}>{previewDescription}</div>
+        {/* {pressed || resultsMode || !showTyping ?
         <div className={styles.description}>{previewDescription}</div> :
         <Typewriter
           options={{
@@ -248,10 +250,11 @@ const CardContents = (
               setInit(true);
             }).start();
           }}
-        />}
+        />} */}
       </div>
       <div className={styles.questionContainer}>
-        {pressed || resultsMode || !showTyping ?
+        <p className={styles.question}>{question}</p>
+        {/* {pressed || resultsMode || !showTyping ?
         <p className={styles.question}>{question}</p> :
           <Typewriter
             options={{
@@ -263,7 +266,7 @@ const CardContents = (
                 refs.question.current = typewriter;
               }).start();
             }}
-          />}
+          />} */}
       </div>
       <div className={styles.optionsContainer}>
         {
