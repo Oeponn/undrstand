@@ -2,7 +2,8 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useSprings, animated, to as interpolate} from '@react-spring/web';
 import {useDrag} from 'react-use-gesture';
-import CardContents from 'components/global/StagingCardContents';
+// import CardContents from 'components/global/StagingCardContents';
+import CardContents from 'components/global/CardContents';
 import {AnswerKeyType, Card, CardTree, Direction} from '~/types/testTypes';
 // import {AnswerKeyType, Card, CardTree, Direction} from 'types/deck';
 import {
@@ -452,8 +453,8 @@ function Deck({
         scale,
         opacity,
         perspective,
-        // borderRadius,
-        // borderWidth,
+        borderRadius,
+        borderWidth,
       }, i) => {
         const {
           position,
@@ -477,8 +478,8 @@ function Deck({
                 transform: interpolate([rot, rotX, scale, perspective], trans),
                 WebkitTransform: interpolate([rot, rotX, scale, perspective], trans),
                 opacity: visible ? opacity : 0,
-                // borderRadius,
-                // borderWidth,
+                borderRadius,
+                borderWidth,
               }}
               className={styles.card}
             >
