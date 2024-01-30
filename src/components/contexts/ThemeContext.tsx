@@ -17,7 +17,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType>({
   theme: 'dark',
   toggleTheme: () => {},
-  showTyping: true,
+  showTyping: false,
   toggleShowTyping: () => {},
   storeState: true,
   toggleStoreState: () => {},
@@ -31,7 +31,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> =
  ({children}) => {
    const storedState = localStorage.getItem('undrstandSettings');
    let localTheme: Theme = 'dark';
-   let localTyping = true;
+   let localTyping = false;
    let localStoreState = true;
    if (storedState) {
      const parsedState = JSON.parse(storedState);

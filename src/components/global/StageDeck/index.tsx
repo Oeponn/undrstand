@@ -392,8 +392,8 @@ function Deck({
       let rotX = 30;
       let p: number | string = 2500;
       let scale = 1; // Active cards lift up a bit
-      let borderRadius = 10;
-      let borderWidth = window.innerWidth > 480 ? 5 : 2;
+      const borderRadius = 10;
+      const borderWidth = window.innerWidth > 480 ? 5 : 2;
       const config = {
         friction: 50,
         tension: pressed ? (800) : (isGone ? 200 : 500)};
@@ -412,11 +412,11 @@ function Deck({
           // const currentScale = props[i].scale.get();
           // const scaleX = viewportWidth / cardRect.width * 1.0381 * currentScale;
           // const scaleY = viewportHeight / cardRect.height * 0.8695 * currentScale;
-          const scaleX = viewportWidth / resultCardRef.current.clientWidth;
-          const scaleY = viewportHeight / resultCardRef.current.clientHeight;
+          const scaleX = viewportWidth / (resultCardRef.current.clientWidth + 2 * borderWidth);
+          const scaleY = viewportHeight / (resultCardRef.current.clientHeight + 2 * borderWidth);
           scale = Math.min(scaleX, scaleY);
-          borderRadius = 0;
-          borderWidth = 0;
+          // borderRadius = 0;
+          // borderWidth = 0;
         } else {
           // Use the smaller scale factor
           scale = 1.25;

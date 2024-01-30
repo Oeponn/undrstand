@@ -41,7 +41,7 @@ const Settings = () => {
             Show Typing Animation
           </div>
           <div className={styles.hint}>
-            You can turn off the typing animation if you want
+            The typing animation can be slow on some older devices
           </div>
         </div>
         <Checkbox
