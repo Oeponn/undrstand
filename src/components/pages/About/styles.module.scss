@@ -11,7 +11,8 @@
   min-height: 450px;
   width: 100%;
   box-sizing: border-box;
-  color: white;
+  color: rgb(var(--accentColor, (255, 255, 255)));
+  
   padding: 0 20px;
   overflow: hidden;
   overflow-y: auto;
@@ -24,19 +25,20 @@
 }
 
 .outbound {
-  fill: white;
+  fill: rgb(var(--accentColor, (255, 255, 255)));
   transform: scale(0.6);
 }
 
 .link {
-  color: white;
+  // color: white;
+  color: rgb(var(--accentColor, (255, 255, 255)));
 
   &:hover {
     -webkit-text-stroke-width: 1px;
 
     .outbound {
-      -webkit-filter: drop-shadow(1px 0 10px rgba(255, 255, 255, 1));
-      filter: drop-shadow(1px 0 10px rgba(255, 255, 255, 1));
+      -webkit-filter: drop-shadow(1px 0 10px rgb(var(--accentColor, (255, 255, 255))));
+      filter: drop-shadow(1px 0 10px rgb(var(--accentColor, (255, 255, 255))));
     }
   }
 }

@@ -44,3 +44,26 @@
     -->
   </body>
 </html>
+
+<script>
+  (function() {
+    const storedState = localStorage.getItem('undrstandSettings');
+    if (storedState) {
+      const parsedState = JSON.parse(storedState);
+      const theme = parsedState.theme;
+      const root = document.documentElement;
+      
+      if (theme === 'dark') {
+        root.style.setProperty('--themeColor1', '59,63,73');
+        root.style.setProperty('--themeColor2', '40,44,52');
+        root.style.setProperty('--themeColor3', '30,33,39');
+        root.style.setProperty('--accentColor', '255,255,255');
+      } else if (theme === 'light') {
+        root.style.setProperty('--themeColor1', '255,255,255');
+        root.style.setProperty('--themeColor2', '255,255,255');
+        root.style.setProperty('--themeColor3', '255,255,255');
+        root.style.setProperty('--accentColor', '0,0,0');
+      }
+    }
+  })();
+</script>

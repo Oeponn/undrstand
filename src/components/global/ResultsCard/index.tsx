@@ -10,14 +10,14 @@ import {
   Traits,
   Watermark,
 } from 'components/global/ResultsCard/components';
-import {useTheme} from 'components/contexts/ThemeContext';
+// import {useTheme} from 'components/contexts/ThemeContext';
 // import html2canvas from 'html2canvas';
 import styles from './styles.module.scss';
 const ResultsCard = ({outcome, resultCardRef}:{
   outcome: mb,
   resultCardRef: React.RefObject<HTMLDivElement>,
   }) => {
-  const {theme} = useTheme();
+  // const {theme} = useTheme();
   // console.log('what:', outcome);
 
   useEffect(() => {
@@ -29,7 +29,7 @@ const ResultsCard = ({outcome, resultCardRef}:{
       secondaryColor,
       thirdColor,
       fourthColor,
-      accentColor,
+      // accentColor,
       darkText,
       lightText,
     } = personalities[outcome];
@@ -38,8 +38,7 @@ const ResultsCard = ({outcome, resultCardRef}:{
     documentStyle.setProperty('--secondaryColor', secondaryColor);
     documentStyle.setProperty('--thirdColor', thirdColor);
     documentStyle.setProperty('--fourthColor', fourthColor);
-    documentStyle.setProperty('--accentColor', accentColor);
-    documentStyle.setProperty('--accentColor', accentColor);
+    // documentStyle.setProperty('--accentColor', accentColor);
     documentStyle.setProperty('--darkText', darkText);
     documentStyle.setProperty('--lightText', lightText);
   }, [outcome]);
@@ -68,10 +67,10 @@ const ResultsCard = ({outcome, resultCardRef}:{
     <div
       className={styles.resultCard}
     >
-      <div
+      {/* <div
         className='overlay'
         style={{backgroundColor: theme === 'dark' ? 'black' : 'white'}}
-      />
+      /> */}
       <div className={styles.resultCardDownload} ref={resultCardRef}>
         <Header element={element} title={title}/>
         <Watermark />

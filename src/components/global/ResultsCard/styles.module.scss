@@ -6,7 +6,7 @@
   --secondaryColor: rgb(87, 141, 67);
   --thirdColor: rgb(194, 178, 128);
   --fourthColor: rgb(120, 91, 59);
-  --accentColor: rgb(255, 204, 92);
+  // --accentColor: rgb(255, 204, 92);
   --darkText: black;
   --lightText: white;
 
@@ -16,9 +16,6 @@
   // --fourthColor: #785b3b;
   // --accentColor: #ffcc5c;
 }
-
-// $washedGrey: rgba(245, 245, 245, 1);
-$strokeColor: var(--accentColor);
 
 .overlay {
   height: 100%;

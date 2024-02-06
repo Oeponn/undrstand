@@ -40,7 +40,7 @@ const About = () => {
         am, with a whole personality-test/choose-your-own-adventure/survey
         builder.
       </p>
-      <h1>Building Your Own</h1>
+      <h1>Build Your Own Card Quiz</h1>
       <p>
         I am currently building the feature to let you build your own tests. The idea is that you'll be able to
         create custom tests and surveys with optional different levels of complexity, ranging from simple linear

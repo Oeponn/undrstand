@@ -1,9 +1,8 @@
 
 // import React, {useLayoutEffect, useState} from 'react';
-// import React, {useState} from 'react';
-// import React from 'react';
+import {useRef} from 'react';
+import {RouteChangeHandler} from 'components/global/RouteChangeHandler';
 import {Switch, Route, BrowserRouter} from 'react-router-dom';
-import {useTheme} from 'components/contexts/ThemeContext';
 import {
   // Footer,
   Header,
@@ -42,8 +41,10 @@ import './App.scss';
 
 const App = () => {
   // const [width, height] = useWindowSize();
-  const {theme} = useTheme();
-  // console.log('theme:', theme);
+  const appContainerRef = useRef<HTMLDivElement>(null);
+
+  //   document.title = title;
+  // }, [location]);
 
 
   // const [testBackend, setTestBackend] = useState('Loading backend');
@@ -62,23 +63,37 @@ const App = () => {
   return (
     <div
       className="appContainer"
+      ref={appContainerRef}
       // style={
       //   {width: `${width}px`, height: `${height + 1}px`}
       // }
     >
-      <div
-        className='overlay'
-        style={{backgroundColor: theme === 'dark' ? 'black' : 'white'}}
-      />
       <BrowserRouter>
         {/* <Header /> */}
+        <RouteChangeHandler />
         <div className="pageContainer">
           <Switch>
             <Route path="/" component={Home} exact={true} />
             {/* <Route path="/staging" component={Staging} exact={true} /> */}
             <Route path="/build" component={Build} exact={true} />
             <Route path="/about" component={About} exact={true} />
-            <Route path="/settings" component={Settings} exact={true} />
+            {/* <Route path="/settings" component={Settings} exact={true} /> */}
+            <Route
+              path="/settings"
+              exact={true}
+              render={(props) => {
+                return (
+                  <Settings {...props} appContainerRef={appContainerRef} />
+                );
+              }}
+            />
+            {/* <Route
+              path="/settings"
+              exact={true}
+              render={(props) => {
+                <Settings {...props} appContainerRef={appContainerRef} />;
+              }}
+            /> */}
             <Route path="/results" component={Results} exact={true} />
             {/* <Route component={PageNotFound} /> */}
           </Switch>

@@ -1,5 +1,16 @@
 @import "css/_dimensions";
 
+@keyframes expandCircle {
+  0% {
+    // clip-path: circle(0% at 50% 50%);
+    // opacity: 1;
+  }
+  100% {
+    clip-path: circle(150% at 50% 50%);
+    // opacity: 0;
+  }
+}
+
 .container {
   position: relative;
   text-align: left;
@@ -11,7 +22,7 @@
   min-height: 450px;
   width: 100%;
   box-sizing: border-box;
-  color: white;
+  color: rgb(var(--accentColor, (255, 255, 255)));
   padding: 0 20px;
   overflow: hidden;
   overflow-y: auto;
@@ -20,6 +31,20 @@
     margin-bottom: 10px;
   }
 }
+
+.lightTransition {
+  // background: rgb(var(--transitionColor)) !important;
+  background: white !important;
+  animation: expandCircle 0.75s ease-in forwards;
+  // animation: expandCircle 30s ease-in forwards;
+}
+.darkTransition {
+  background: linear-gradient(180deg, rgb(59,63,73) 0%, rgb(40,44,52) 35%, rgb(30, 33, 39) 100%) !important;
+  // background: blue !important;
+  animation: expandCircle 0.75s ease-in forwards;
+  // animation: expandCircle 30s ease-in forwards;
+}
+
 
 .settingWrapper {
   width: 100%;
@@ -42,7 +67,7 @@
   border-top: none;
   border-left: none;
   border-right: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(var(--accentColor, (255,255,255)), 0.2);
   margin-top: 20px;
   margin-bottom: 20px;
 }

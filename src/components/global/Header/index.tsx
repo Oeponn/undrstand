@@ -55,7 +55,7 @@ const Header = () => {
         <NavLink to="/about" exact={true} activeClassName={styles.activeLink} className={styles.navLink}>
           {/* <span className="material-symbols-outlined">info</span> */}
           <InfoIcon className={styles.headerIcon} />
-          <div>Info</div>
+          <div>About</div>
         </NavLink>
         {/* <NavLink to="/build" exact={true} activeClassName={styles.activeLink} className={styles.navLink}>
           <span className="material-symbols-outlined">dashboard_customize</span>
