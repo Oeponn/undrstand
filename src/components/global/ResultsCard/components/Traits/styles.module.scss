@@ -363,8 +363,17 @@
 
   .elementIcon {
     width: 70%;
-    height: 70%;
     position: static;
   }
+
+  /* Safari 7.1+ */
+
+  _::-webkit-full-page-media, _:future, :root .elementIcon {
+
+    height: 70%;
+
+  }
+  
 }
+
 

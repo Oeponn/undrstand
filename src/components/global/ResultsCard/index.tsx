@@ -66,12 +66,14 @@ const ResultsCard = ({outcome, resultCardRef}:{
   return (
     <div
       className={styles.resultCard}
+      ref={resultCardRef}
     >
       {/* <div
         className='overlay'
         style={{backgroundColor: theme === 'dark' ? 'black' : 'white'}}
       /> */}
-      <div className={styles.resultCardDownload} ref={resultCardRef}>
+      <div className={styles.resultCardDownload}>
+        {/* <div className={styles.resultCardDownload} ref={resultCardRef}> */}
         <Header element={element} title={title}/>
         <Watermark />
         <Traits
